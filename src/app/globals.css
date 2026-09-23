@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
+/* Job Portal theme — light blue throughout, no dark/black tones. The client
+   asked to drop the dark palette, so this file no longer defines a dark-mode
+   variant: the light-blue theme applies regardless of OS color scheme. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eff6ff;
+  --foreground: #0f172a;
+
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  --primary: #0596f7;
+  --primary-foreground: #ffffff;
+
+  --secondary: #dbeafe;
+  --secondary-foreground: #1e3a8a;
+
+  --muted: #eaf2ff;
+  --muted-foreground: #5b7290;
+
+  --accent: #dbeafe;
+  --accent-foreground: #1e3a8a;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+
+  --border: #d9e6fb;
+  --input: #d9e6fb;
+  --ring: #0596f7;
+
+  --radius: 0.75rem;
+
+  /* Sidebar-only tokens: a bright sky-blue gradient centered on the client's requested
+     #0596f7, kept separate from --background/--foreground since it stays blue regardless. */
+  --sidebar-gradient: linear-gradient(160deg, #38bdf8 0%, #0596f7 50%, #0284c7 100%);
+  --app-sidebar-width: 260px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
