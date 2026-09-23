@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Plus, Search, Eye, Pencil, Trash2, Building2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/context/AuthContext";
 import { canManage, canDelete } from "@/lib/role-access";
 import { EMPLOYERS } from "@/lib/mock-data";
 import type { EmployerStatus } from "@/lib/types";
@@ -20,7 +20,7 @@ const TABS: { key: "all" | EmployerStatus; label: string }[] = [
 ];
 
 export default function EmployersPage() {
-  const { user } = useAuth();
+  const user = useCurrentUser();
   const mayManage = canManage(user);
   const mayDelete = canDelete(user);
 

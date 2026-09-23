@@ -2,9 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Register() {
   const router = useRouter();
+  const { refresh } = useAuth();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,7 +33,8 @@ export default function Register() {
       return;
     }
 
-    router.push("/");
+    await refresh();
+    router.push("/app/dashboard");
   }
 
   return (

@@ -1,37 +1,29 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import type { UserRole } from "@/lib/models/user";
+import { SESSION_COOKIE_NAME, createSessionToken, verifySessionToken } from "@/lib/auth-core";
 
-const COOKIE_NAME = "hirepath_session";
-
-function getJwtSecret() {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error("JWT_SECRET is not configured");
-  }
-  return secret;
-}
-
-export async function hashPassword(password: string) {
-  return bcrypt.hash(password, 12);
-}
-
-export async function verifyPassword(password: string, passwordHash: string) {
-  return bcrypt.compare(password, passwordHash);
-}
-
-export function createSessionToken(userId: number, role: UserRole) {
-  return jwt.sign({ userId, role }, getJwtSecret(), { expiresIn: "7d" });
-}
+export { hashPassword, verifyPassword, verifySessionToken, SESSION_COOKIE_NAME } from "@/lib/auth-core";
+export type { SessionPayload } from "@/lib/auth-core";
 
 export async function setSessionCookie(userId: number, role: UserRole) {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, createSessionToken(userId, role), {
+  cookieStore.set(SESSION_COOKIE_NAME, createSessionToken(userId, role), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24 * 7,
     path: "/",
   });
+}
+
+export async function clearSessionCookie() {
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE_NAME);
+}
+
+export async function getSession() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  if (!token) return null;
+  return verifySessionToken(token);
 }

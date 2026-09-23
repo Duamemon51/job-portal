@@ -1,11 +1,38 @@
 "use client";
 
-import { Suspense, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { Menu } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import Sidebar from "./Sidebar";
+
+function FullPageLoader() {
+  return (
+    <div className="grid min-h-screen place-items-center bg-background">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+    </div>
+  );
+}
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // The proxy already blocks unauthenticated requests to /app/*, but the session
+  // can still expire client-side between navigations — bounce to /login if so.
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [loading, user, router]);
+
+  // Gate on `user` too, not just `loading`: this keeps every page under /app from
+  // ever rendering with a null user, since `children` is a page component that
+  // reads useCurrentUser() and assumes it's non-null.
+  if (loading || !user) {
+    return <FullPageLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-background">

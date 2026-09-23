@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Building2, Users, Briefcase, FileText } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/context/AuthContext";
 import { ROLE_LABELS } from "@/lib/role-access";
 import { EMPLOYERS, JOB_SEEKERS, DOCUMENTS } from "@/lib/mock-data";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -15,7 +15,7 @@ function topByDate<T extends { updatedAt: string }>(items: T[], count: number) {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const user = useCurrentUser();
 
   const activeEmployers = EMPLOYERS.filter((e) => e.status === "active").length;
   const activeJobs = EMPLOYERS.reduce((sum, e) => sum + e.activeJobs, 0);

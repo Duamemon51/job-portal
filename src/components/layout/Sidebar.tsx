@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   ChevronLeft,
@@ -20,7 +20,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, useCurrentUser } from "@/context/AuthContext";
 import { DOCUMENT_CATEGORY_LABELS } from "@/lib/mock-data";
 import type { DocumentCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -95,8 +95,11 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const router = useRouter();
+  const user = useCurrentUser();
+  const { logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [docsOpen, setDocsOpen] = useState(true);
   const iconSize = collapsed ? "h-5 w-5" : "h-4 w-4";
 
@@ -198,14 +201,41 @@ export default function Sidebar({
                     href={`/app/dokument?category=${key}`}
                     onClick={onMobileClose}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-all duration-200",
+                      "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
                       active
-                        ? "text-white font-semibold"
-                        : "text-white/70 hover:text-white"
+                        ? "bg-white/20 text-white shadow-lg shadow-black/20 backdrop-blur-sm border border-white/25"
+                        : "text-white/70 hover:bg-white/10 hover:text-white"
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     <span className="tracking-wide">{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Collapsed sidebar: no room for the "Dokument" heading, so show the
+              five category icons directly, same as the top-level nav icons. */}
+          {collapsed && (
+            <div className="space-y-0.5">
+              {DOCUMENT_CATEGORIES.map(([key, label]) => {
+                const Icon = DOCUMENT_CATEGORY_ICONS[key];
+                const active = onDocuments && activeCategory === key;
+                return (
+                  <Link
+                    key={key}
+                    href={`/app/dokument?category=${key}`}
+                    title={label}
+                    onClick={onMobileClose}
+                    className={cn(
+                      "flex items-center justify-center rounded-xl px-2 py-2.5 transition-all duration-200",
+                      active
+                        ? "bg-white/20 text-white shadow-lg shadow-black/20 backdrop-blur-sm border border-white/25"
+                        : "text-white/70 hover:bg-white/10 hover:text-white"
+                    )}
+                  >
+                    <Icon className="h-5 w-5 shrink-0" />
                   </Link>
                 );
               })}
@@ -223,33 +253,51 @@ export default function Sidebar({
         <div className={cn("flex items-center gap-2", collapsed && "flex-col")}>
           {!collapsed && (
             <>
-              <button
-                type="button"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/85 transition-all duration-200 hover:bg-white/20 hover:text-white"
+              <Link
+                href="/app/installningar"
+                onClick={onMobileClose}
+                className={cn(
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-200",
+                  pathname === "/app/installningar"
+                    ? "border-white/25 bg-white/20 text-white"
+                    : "border-white/15 bg-white/10 text-white/85 hover:bg-white/20 hover:text-white"
+                )}
                 title="Inställningar"
               >
                 <Settings className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/85 transition-all duration-200 hover:bg-white/20 hover:text-white"
+              </Link>
+              <Link
+                href="/app/profil"
+                onClick={onMobileClose}
+                className={cn(
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-200",
+                  pathname === "/app/profil"
+                    ? "border-white/25 bg-white/20 text-white"
+                    : "border-white/15 bg-white/10 text-white/85 hover:bg-white/20 hover:text-white"
+                )}
                 title="Profil"
               >
                 <UserRound className="h-4 w-4" />
-              </button>
+              </Link>
             </>
           )}
 
           <button
             type="button"
+            onClick={async () => {
+              setLoggingOut(true);
+              await logout();
+              router.push("/login");
+            }}
+            disabled={loggingOut}
             className={cn(
-              "flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 text-sm font-semibold text-white/85 transition-all duration-200 hover:border-red-400/30 hover:bg-red-500/25 hover:text-red-100",
+              "flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 text-sm font-semibold text-white/85 transition-all duration-200 hover:border-red-400/30 hover:bg-red-500/25 hover:text-red-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
               collapsed ? "h-8 w-8 justify-center" : "flex-1 px-4 py-2"
             )}
             title="Logga ut"
           >
             <LogOut className="h-4 w-4" />
-            {!collapsed && "Logga ut"}
+            {!collapsed && (loggingOut ? "Loggar ut…" : "Logga ut")}
           </button>
         </div>
       </div>

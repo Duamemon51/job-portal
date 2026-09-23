@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Plus, Search, Eye, Pencil, Trash2, Users } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/context/AuthContext";
 import { canManage, canDelete } from "@/lib/role-access";
 import { JOB_SEEKERS } from "@/lib/mock-data";
 import type { JobSeekerStatus } from "@/lib/types";
@@ -21,7 +21,7 @@ const TABS: { key: "all" | JobSeekerStatus; label: string }[] = [
 ];
 
 export default function JobSeekersPage() {
-  const { user } = useAuth();
+  const user = useCurrentUser();
   const mayManage = canManage(user);
   const mayDelete = canDelete(user);
 
