@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function Home() {
   return (
     <main className="font-[Inter] text-[#152238] bg-[#F4F9FF]">
@@ -22,9 +23,12 @@ export default function Home() {
             <a href="#omdomen" className="hover:text-[#0B2D5C] transition-colors">Omdömen</a>
           </div>
           <div className="flex items-center gap-3">
-            <button className="text-sm text-[#3F5875] hover:text-[#0B2D5C] transition-colors">
-              Logga in
-            </button>
+        <Link
+  href="/login"
+  className="text-sm text-[#3F5875] hover:text-[#0B2D5C] transition-colors"
+>
+  Logga in
+</Link>
             <button className="text-sm px-4 py-2 rounded-md bg-[#2E7BF6] text-white font-medium hover:bg-[#1f68dd] transition-colors">
               Annonsera jobb
             </button>
