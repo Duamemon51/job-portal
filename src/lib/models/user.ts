@@ -9,6 +9,8 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare email: string;
   declare passwordHash: string;
   declare role: UserRole;
+  declare resetTokenHash: CreationOptional<string | null>;
+  declare resetTokenExpiresAt: CreationOptional<Date | null>;
 }
 
 User.init(
@@ -37,6 +39,16 @@ User.init(
       type: DataTypes.ENUM("user", "admin", "superadmin"),
       allowNull: false,
       defaultValue: "user",
+    },
+    resetTokenHash: {
+      type: DataTypes.STRING(64),
+      allowNull: true,
+      field: "reset_token_hash",
+    },
+    resetTokenExpiresAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: "reset_token_expires_at",
     },
   },
   {

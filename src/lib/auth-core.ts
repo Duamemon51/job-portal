@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { randomBytes, createHash } from "crypto";
 import type { UserRole } from "@/lib/models/user";
 
 /**
@@ -45,4 +46,16 @@ export function verifySessionToken(token: string): SessionPayload | null {
   } catch {
     return null;
   }
+}
+
+export const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+/** The raw token goes in the reset link; only its hash is ever stored. */
+export function createResetToken() {
+  const token = randomBytes(32).toString("hex");
+  return { token, tokenHash: hashResetToken(token), expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS) };
+}
+
+export function hashResetToken(token: string) {
+  return createHash("sha256").update(token).digest("hex");
 }
