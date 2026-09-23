@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { SequelizeStorage, Umzug } from "umzug";
-import { down, up } from "@/lib/migrations/001-create-users";
+import * as createUsers from "@/lib/migrations/001-create-users";
+import * as addPasswordResetFields from "@/lib/migrations/002-add-password-reset-fields";
 
 const globalForSequelize = globalThis as unknown as {
   sequelize?: Sequelize;
@@ -25,7 +26,10 @@ let migrationPromise: Promise<void> | undefined;
 export async function connectDatabase() {
   await sequelize.authenticate();
   migrationPromise ??= new Umzug({
-    migrations: [{ name: "001-create-users", up, down }],
+    migrations: [
+      { name: "001-create-users", ...createUsers },
+      { name: "002-add-password-reset-fields", ...addPasswordResetFields },
+    ],
     context: sequelize.getQueryInterface(),
     storage: new SequelizeStorage({ sequelize }),
     logger: undefined,

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Upload, Search, FileText, Download, Trash2, Paperclip } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/context/AuthContext";
 import { canUploadDocuments, canDelete } from "@/lib/role-access";
 import { DOCUMENTS, DOCUMENT_CATEGORY_LABELS } from "@/lib/mock-data";
 import type { DocumentCategory } from "@/lib/types";
@@ -28,7 +28,7 @@ function readCategory(value: string | null): DocumentCategory {
 }
 
 export default function DocumentsView() {
-  const { user } = useAuth();
+  const user = useCurrentUser();
   const mayUpload = canUploadDocuments(user);
   const mayDelete = canDelete(user);
 
