@@ -25,6 +25,20 @@ export function createSessionToken(userId: number, role: UserRole) {
   return jwt.sign({ userId, role }, getJwtSecret(), { expiresIn: "7d" });
 }
 
+export async function hasValidSession() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) return false;
+
+  try {
+    jwt.verify(token, getJwtSecret());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function setSessionCookie(userId: number, role: UserRole) {
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, createSessionToken(userId, role), {

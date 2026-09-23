@@ -9,111 +9,185 @@ export default function Home() {
         }
         .fade-up { opacity: 0; animation: fadeUp 0.7s ease-out forwards; }
       `}</style>
+{/* NAVBAR */}
+<nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[#DCE7F5]">
+  <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
+    <span className="font-['Space_Grotesk'] text-xl font-bold text-[#12294D] tracking-tight">
+      Hire<span className="text-[#2F7BE0]">Path</span>
+    </span>
+    <div className="hidden md:flex items-center gap-8 text-sm text-[#4A6076]">
+      <a href="#jobb" className="hover:text-[#12294D] transition-colors">Hitta jobb</a>
+      <a href="#kategorier" className="hover:text-[#12294D] transition-colors">Kategorier</a>
+      <a href="#foretag" className="hover:text-[#12294D] transition-colors">Företag</a>
+      <a href="#omdomen" className="hover:text-[#12294D] transition-colors">Omdömen</a>
+    </div>
+    <div className="flex items-center gap-3">
+      <Link
+        href="/login"
+        className="text-sm text-[#4A6076] hover:text-[#12294D] transition-colors"
+      >
+        Logga in
+      </Link>
+      <button className="text-sm px-4 py-2 rounded-md bg-[#2F7BE0] text-white font-medium hover:bg-[#1E5FC2] transition-colors shadow-sm shadow-[#2F7BE0]/20">
+        Annonsera jobb
+      </button>
+    </div>
+  </div>
+</nav>
 
-      {/* NAVBAR */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[#DCE9FA]">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-          <span className="font-['Space_Grotesk'] text-xl font-bold text-[#0B2D5C] tracking-tight">
-            Hire<span className="text-[#2E7BF6]">Path</span>
-          </span>
-          <div className="hidden md:flex items-center gap-8 text-sm text-[#3F5875]">
-            <a href="#jobb" className="hover:text-[#0B2D5C] transition-colors">Hitta jobb</a>
-            <a href="#kategorier" className="hover:text-[#0B2D5C] transition-colors">Kategorier</a>
-            <a href="#foretag" className="hover:text-[#0B2D5C] transition-colors">Företag</a>
-            <a href="#omdomen" className="hover:text-[#0B2D5C] transition-colors">Omdömen</a>
+    {/* HERO */}
+<section className="relative pt-20 pb-24 px-6 overflow-hidden bg-gradient-to-br from-white via-white to-[#EEF5FF]">
+  {/* Background glow */}
+  <div className="absolute top-0 right-0 w-[36rem] h-[36rem] bg-[#CFE6FF] rounded-full blur-3xl opacity-50 -translate-y-1/3 translate-x-1/4" />
+
+  <div className="relative max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+    {/* LEFT COLUMN */}
+    <div>
+      <span className="inline-block text-xs font-bold tracking-wide text-[#2F7BE0] bg-[#E4F0FF] px-4 py-2 rounded-full border border-[#CFE1FA]">
+        SVERIGES SMARTASTE REKRYTERINGSPLATTFORM
+      </span>
+
+      <h1 className="font-['Space_Grotesk'] text-6xl font-extrabold leading-[1.05] tracking-tight mt-6">
+        <span className="text-[#0A0F1A]">Hitta kandidaten<br />som passar<br />tjänsten.</span>
+        <br />
+        <span className="text-[#2F7BE0]">Inte bara CV:t.</span>
+      </h1>
+
+      <p className="mt-6 text-lg text-[#4A6076] max-w-md leading-relaxed">
+        Jobbportal samlar ansökningar, CV:n och verklig kandidataktivitet på
+        ett ställe — så att du snabbt hittar rätt person, skickar
+        erbjudande och håller koll på hela rekryteringsprocessen.
+      </p>
+
+      <div className="mt-9 flex flex-wrap items-center gap-3">
+       <button className="flex items-center gap-2 px-6 py-3.5 bg-[#2F7BE0] text-white text-sm font-semibold rounded-full hover:bg-[#1E5FC2] hover:shadow-lg hover:shadow-[#2F7BE0]/25 transition-all">
+  Sök jobb
+  <span aria-hidden>→</span>
+</button>
+<button className="flex items-center gap-2 px-6 py-3.5 bg-white text-[#12294D] text-sm font-semibold rounded-full border border-[#DCE7F5] hover:border-[#2F7BE0]/40 transition-colors">
+  <span className="w-6 h-6 rounded-full bg-[#2F7BE0] flex items-center justify-center text-white text-xs">▶</span>
+  Skapa CV gratis
+</button>
+      </div>
+
+      <div className="mt-8 flex flex-wrap items-center gap-6 text-sm font-medium text-[#12294D]">
+        <span className="flex items-center gap-1.5">
+          <span className="text-[#2F7BE0]">✓</span> Verifierade kandidater
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="text-[#2F7BE0]">✓</span> Automatiska CV-matchningar
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="text-[#2F7BE0]">✓</span> Klart på under 5 minuter
+        </span>
+      </div>
+    </div>
+
+    {/* RIGHT COLUMN — dashboard mockup */}
+    <div className="relative">
+      <div className="rounded-2xl bg-white shadow-2xl shadow-[#2F7BE0]/10 border border-[#E4F0FF] overflow-hidden">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E4F0FF]">
+          <span className="font-['Space_Grotesk'] text-lg font-bold text-[#12294D]">Jobbportal</span>
+          <div className="flex-1 max-w-xs mx-6 flex items-center gap-2 bg-[#F4F8FE] rounded-lg px-3 py-2">
+            <span className="text-[#9AAEC4] text-xs">🔍</span>
+            <span className="text-xs text-[#9AAEC4]">Sök kandidat eller roll...</span>
           </div>
-          <div className="flex items-center gap-3">
-        <Link
-  href="/login"
-  className="text-sm text-[#3F5875] hover:text-[#0B2D5C] transition-colors"
->
-  Logga in
-</Link>
-            <button className="text-sm px-4 py-2 rounded-md bg-[#2E7BF6] text-white font-medium hover:bg-[#1f68dd] transition-colors">
-              Annonsera jobb
-            </button>
-          </div>
+          <div className="w-8 h-8 rounded-full bg-[#CFE6FF]" />
         </div>
-      </nav>
 
-      {/* HERO */}
-      <section className="relative pt-36 pb-28 px-6 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#CFE6FF] rounded-full blur-3xl opacity-60" />
-        <div className="absolute top-40 right-0 w-[28rem] h-[28rem] bg-[#E4F0FF] rounded-full blur-3xl opacity-70" />
+        <div className="flex">
+          {/* Sidebar */}
+          <div className="w-36 border-r border-[#E4F0FF] py-4 px-3 flex flex-col gap-1 text-sm">
+            {[
+              { label: "Dashboard", active: true },
+              { label: "Arbetsgivare" },
+              { label: "Jobbsökande" },
+              { label: "CV & Ansökningar" },
+              { label: "Avtal" },
+              { label: "Mallar" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className={`px-3 py-2 rounded-lg ${
+                  item.active
+                    ? "bg-[#E4F0FF] text-[#2F7BE0] font-semibold"
+                    : "text-[#6B7E96]"
+                }`}
+              >
+                {item.label}
+              </div>
+            ))}
+          </div>
 
-        <div className="relative max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
-          <div>
-            <span
-              className="fade-up inline-block text-sm font-medium text-[#2E7BF6] bg-[#E4F0FF] px-3 py-1 rounded-full"
-              style={{ animationDelay: "0.05s" }}
-            >
-              12 400 lediga tjänster just nu
-            </span>
-            <h1
-              className="fade-up font-['Space_Grotesk'] text-5xl md:text-6xl font-bold text-[#0B2D5C] leading-[1.08] tracking-tight mt-5"
-              style={{ animationDelay: "0.15s" }}
-            >
-              Hitta jobbet som hittar tillbaka till dig
-            </h1>
-            <p
-              className="fade-up mt-6 text-lg text-[#4A6280] max-w-md leading-relaxed"
-              style={{ animationDelay: "0.25s" }}
-            >
-              Berätta vad du är bra på, så berättar vi vilka som anställer.
-              Inget brus, bara tjänsterna som passar dig.
-            </p>
-
-            <div
-              className="fade-up mt-9 bg-white rounded-xl p-2 flex flex-col sm:flex-row gap-2 max-w-lg shadow-lg shadow-[#BFDBFF]/60 border border-[#E4F0FF]"
-              style={{ animationDelay: "0.35s" }}
-            >
-              <input
-                type="text"
-                placeholder="Jobbtitel eller kompetens"
-                className="flex-1 px-4 py-3 rounded-lg outline-none text-sm text-[#152238] placeholder:text-[#9AAEC4]"
-              />
-              <button className="px-6 py-3 bg-[#2E7BF6] text-white text-sm font-medium rounded-lg hover:bg-[#1f68dd] transition-colors">
+          {/* Table area */}
+          <div className="flex-1 p-5">
+            <div className="flex items-center gap-2 bg-[#F4F8FE] rounded-lg px-3 py-2.5 mb-4">
+              <span className="text-xs text-[#9AAEC4] flex-1">
+                Frontend-utvecklare med 3+ års erfarenhet, Stockholm
+              </span>
+              <button className="px-4 py-1.5 bg-[#2F7BE0] text-white text-xs font-semibold rounded-md">
                 Sök
               </button>
             </div>
-            <p
-              className="fade-up mt-4 text-sm text-[#7B93AF]"
-              style={{ animationDelay: "0.45s" }}
-            >
-              Frontendutvecklare · Produktdesigner · Dataanalytiker · Distans
-            </p>
-          </div>
 
-          <div className="fade-up relative" style={{ animationDelay: "0.3s" }}>
-            <div className="relative rounded-[2rem] overflow-hidden aspect-[4/5] shadow-2xl shadow-[#BFDBFF]">
-              <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=900&q=80"
-                alt="Team som samarbetar på en modern arbetsplats"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B2D5C]/30 via-transparent to-transparent" />
+            <div className="grid grid-cols-4 text-[11px] font-semibold text-[#9AAEC4] px-2 pb-2">
+              <span>Kandidat</span>
+              <span>Roll</span>
+              <span>Ort</span>
+              <span>Matchning</span>
             </div>
 
-            <div className="absolute -left-8 top-10 bg-white rounded-xl shadow-lg shadow-[#BFDBFF]/70 px-4 py-3 flex items-center gap-3 border border-[#E4F0FF]">
-              <div className="w-9 h-9 rounded-full bg-[#E4F0FF] flex items-center justify-center text-[#2E7BF6] font-bold text-sm">
-                ✓
+            {[
+              { name: "Ella Nyström", role: "UX-designer", city: "Stockholm", pct: "94%", color: "#22A55A" },
+              { name: "Amina Yusuf", role: "Frontend-utv.", city: "Stockholm", pct: "91%", color: "#22A55A" },
+              { name: "Fatima Al-Sayed", role: "Sjuksköterska", city: "Malmö", pct: "87%", color: "#22A55A" },
+              { name: "Daniel Berg", role: "Backend-utv.", city: "Linköping", pct: "76%", color: "#F5A623" },
+              { name: "Erik Holm", role: "Lagerarbetare", city: "Uppsala", pct: "68%", color: "#F5A623" },
+            ].map((row) => (
+              <div
+                key={row.name}
+                className="grid grid-cols-4 items-center text-xs px-2 py-2.5 border-t border-[#F0F4FA]"
+              >
+                <span className="flex items-center gap-2 font-medium text-[#12294D]">
+                  <span className="w-6 h-6 rounded-full bg-[#E4F0FF]" />
+                  {row.name}
+                </span>
+                <span className="text-[#6B7E96]">{row.role}</span>
+                <span className="text-[#6B7E96]">{row.city}</span>
+                <span
+                  className="text-white text-[10px] font-semibold px-2 py-0.5 rounded-full w-fit"
+                  style={{ backgroundColor: row.color }}
+                >
+                  {row.pct}
+                </span>
               </div>
-              <div>
-                <div className="text-sm font-semibold text-[#0B2D5C]">Erbjudande accepterat</div>
-                <div className="text-xs text-[#7B93AF]">Tjänst som produktdesigner</div>
-              </div>
-            </div>
-
-            <div className="absolute -right-6 bottom-10 bg-white rounded-xl shadow-lg shadow-[#BFDBFF]/70 px-5 py-4 border border-[#E4F0FF]">
-              <div className="font-['Space_Grotesk'] text-2xl font-bold text-[#0B2D5C]">
-                68 000+
-              </div>
-              <div className="text-xs text-[#7B93AF] mt-0.5">tillsatta kandidater</div>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
 
+      {/* Floating stat card */}
+      <div className="absolute -left-6 -bottom-8 bg-white rounded-xl shadow-xl shadow-[#2F7BE0]/15 border border-[#E4F0FF] px-5 py-4 w-56">
+        <div className="text-xs text-[#6B7E96] font-medium mb-1">Nya matchande ansökningar</div>
+        <div className="flex items-end justify-between">
+          <span className="font-['Space_Grotesk'] text-3xl font-bold text-[#12294D]">1 248</span>
+          <span className="text-xs font-semibold text-[#2F7BE0] bg-[#E4F0FF] px-2 py-1 rounded-full mb-1">↑ +24%</span>
+        </div>
+        <svg viewBox="0 0 200 50" className="w-full h-10 mt-2">
+          <polyline
+            points="0,40 20,38 40,30 60,32 80,24 100,26 120,18 140,20 160,10 180,8 200,4"
+            fill="none"
+            stroke="#2F7BE0"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
       {/* TRUSTED BY */}
       <section className="py-10 border-y border-[#E4F0FF] bg-white">
         <div className="max-w-6xl mx-auto px-6">
