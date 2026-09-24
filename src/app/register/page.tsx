@@ -1,14 +1,33 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+function BrandMark() {
+  return (
+    <Link href="/" className="flex items-center gap-2.5">
+      <div
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-bold text-white shadow-md"
+        style={{ background: "var(--sidebar-gradient)" }}
+      >
+        JP
+      </div>
+      <span className="text-sm font-bold tracking-tight text-foreground">Jobbportal</span>
+    </Link>
+  );
+}
 
 export default function Register() {
   const router = useRouter();
   const { refresh } = useAuth();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,111 +57,119 @@ export default function Register() {
   }
 
   return (
-    <main className="min-h-screen grid md:grid-cols-2 font-[Inter]">
+    <main className="grid min-h-screen md:grid-cols-2">
       {/* LEFT PANEL */}
-      <section className="relative hidden md:block overflow-hidden">
+      <section className="relative hidden overflow-hidden md:block">
         <img
           src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80"
           alt="Arbetsplats med laptop och växt"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       </section>
 
       {/* RIGHT PANEL: FORM */}
-      <section className="flex items-center justify-center px-6 py-16 bg-white">
+      <section className="relative flex items-center justify-center bg-background px-6 py-16">
+        <Link
+          href="/"
+          className="absolute left-6 top-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Till startsidan
+        </Link>
+
         <div className="w-full max-w-sm">
-          <div className="text-center md:hidden mb-8">
-            <span className="font-['Space_Grotesk'] text-2xl font-bold text-[#0B2D5C]">
-              Hire<span className="text-[#2E7BF6]">Path</span>
-            </span>
+          <div className="mb-8 flex justify-center md:justify-start">
+            <BrandMark />
           </div>
 
-          <div className="flex justify-end mb-8 text-sm text-[#7B93AF]">
+          <div className="flex justify-end mb-6 text-sm text-muted-foreground">
             Har du redan ett konto?{" "}
-            <a href="/login" className="text-[#2E7BF6] font-medium ml-1 hover:text-[#1f68dd]">
+            <Link href="/login" className="ml-1 font-semibold text-primary hover:underline">
               Logga in
-            </a>
+            </Link>
           </div>
 
-          <h1 className="font-['Space_Grotesk'] text-3xl font-bold text-[#0B2D5C] text-center">
-            Skapa ditt konto
-          </h1>
-          <p className="text-sm text-[#7B93AF] text-center mt-2 leading-relaxed">
+          <h1 className="text-2xl font-semibold tracking-tight">Skapa ditt konto</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Kostnadsfritt, klart på under två minuter.
           </p>
 
-          <form className="mt-9 space-y-5" onSubmit={handleSubmit}>
-            <div>
-              <label className="text-sm font-medium text-[#152238]">Fullständigt namn</label>
-              <div className="mt-1.5 flex items-center gap-2 border border-[#DCE9FA] rounded-lg px-4 py-3 focus-within:border-[#2E7BF6] transition-colors">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#9AAEC4" strokeWidth="1.8" className="w-4 h-4 shrink-0">
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-                </svg>
-                <input
+          <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground">Fullständigt namn</label>
+              <div className="relative">
+                <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
                   name="name"
                   required
                   type="text"
                   placeholder="Anna Andersson"
-                  className="flex-1 outline-none text-sm text-[#152238] placeholder:text-[#9AAEC4]"
+                  className="h-11 rounded-xl pl-9"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-[#152238]">E-postadress</label>
-              <div className="mt-1.5 flex items-center gap-2 border border-[#DCE9FA] rounded-lg px-4 py-3 focus-within:border-[#2E7BF6] transition-colors">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#9AAEC4" strokeWidth="1.8" className="w-4 h-4 shrink-0">
-                  <path d="M3 6l9 7 9-7M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
-                </svg>
-                <input
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground">E-postadress</label>
+              <div className="relative">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
                   name="email"
                   required
                   type="email"
                   placeholder="namn@exempel.com"
-                  className="flex-1 outline-none text-sm text-[#152238] placeholder:text-[#9AAEC4]"
+                  className="h-11 rounded-xl pl-9"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-[#152238]">Lösenord</label>
-              <div className="mt-1.5 flex items-center gap-2 border border-[#DCE9FA] rounded-lg px-4 py-3 focus-within:border-[#2E7BF6] transition-colors">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#9AAEC4" strokeWidth="1.8" className="w-4 h-4 shrink-0">
-                  <rect x="4" y="10" width="16" height="10" rx="2" />
-                  <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                </svg>
-                <input
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground">Lösenord</label>
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
                   name="password"
                   required
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Minst 8 tecken"
-                  className="flex-1 outline-none text-sm text-[#152238] placeholder:text-[#9AAEC4]"
+                  className="h-11 rounded-xl pl-9 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Dölj lösenord" : "Visa lösenord"}
+                  className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
 
-            <label className="flex items-start gap-2 text-sm text-[#4A6280] cursor-pointer">
-              <input type="checkbox" className="w-4 h-4 mt-0.5 accent-[#2E7BF6] rounded" />
+            <label className="flex items-start gap-2 text-sm text-muted-foreground">
+              <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded accent-primary" />
               <span>
                 Jag godkänner{" "}
-                <a href="#" className="text-[#2E7BF6] hover:text-[#1f68dd]">användarvillkoren</a>{" "}
+                <a href="#" className="font-medium text-primary hover:underline">
+                  användarvillkoren
+                </a>{" "}
                 och{" "}
-                <a href="#" className="text-[#2E7BF6] hover:text-[#1f68dd]">integritetspolicyn</a>.
+                <a href="#" className="font-medium text-primary hover:underline">
+                  integritetspolicyn
+                </a>
+                .
               </span>
             </label>
 
-            <button
+            {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 bg-[#0B2D5C] text-white font-medium rounded-lg hover:bg-[#082249] transition-colors flex items-center justify-center gap-2"
+              className="h-11 w-full gap-2 rounded-xl text-sm font-semibold"
             >
-              {isSubmitting ? "Skapar konto..." : "Skapa konto"}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </button>
-            {error && <p role="alert" className="text-sm text-red-600 text-center">{error}</p>}
+              {isSubmitting ? "Skapar konto…" : "Skapa konto"}
+              {!isSubmitting && <ArrowRight className="h-4 w-4" />}
+            </Button>
           </form>
         </div>
       </section>
