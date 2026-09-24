@@ -1,5 +1,83 @@
+"use client";
+
+import Features from "@/components/Features";
+import HowItWorks from "@/components/HowItWorks";
+import LogoStrip from "@/components/LogoStrip";
+import Pricing from "@/components/Pricing";
+import Testimonials from "@/components/Testimonials";
+import Faq from "@/components/Faq";
 import Link from "next/link";
+import { ReactNode, useState } from "react";
+import Footer from "@/components/Footer";
+const links = [
+  { href: "#jobb", label: "Hitta jobb" },
+  { href: "#kategorier", label: "Kategorier" },
+  { href: "#foretag", label: "Företag" },
+  { href: "#omdomen", label: "Omdömen" },
+];
+const BLUE = "#4F5BE8";
+ 
+const Icon = ({ d, size = 14, className = "" }: { d: string; size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d={d} />
+  </svg>
+);
+ 
+const P = {
+  plane: "M21 3 3 10.5l7 3 3 7L21 3Z",
+  search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm9 2-3.5-3.5",
+  file: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Zm0 0v5h5",
+  user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0",
+  mail: "M4 5h16v14H4V5Zm0 0 8 8 8-8",
+  sliders: "M4 6h16M4 12h16M4 18h16",
+  gear: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-11v3m0 10v3M4 12h3m10 0h3",
+  inbox: "M4 13l2-8h12l2 8v6H4v-6Zm0 0h5l1 2h4l1-2h5",
+  check: "m5 12 4 4 10-10",
+  briefcase: "M4 8h16v11H4V8Zm5 0V5h6v3",
+};
+ 
+const nav = [
+  { label: "Översikt", d: P.search, active: true },
+  { label: "Lediga tjänster", d: P.search },
+  { label: "Mina ansökta jobb", d: P.file },
+  { label: "Profil", d: P.user },
+  { label: "CV & dokument", d: P.file },
+  { label: "Personligt brev", d: P.mail },
+  { label: "Jobbpreferenser", d: P.sliders },
+  { label: "E-postintegration", d: P.mail },
+  { label: "Inställningar", d: P.gear },
+];
+ 
+const stats = [
+  { v: "48", l: "Ansökningar", d: P.plane, c: "bg-[#EEF0FF] text-[#4F5BE8]" },
+  { v: "12", l: "Intervjuer", d: P.inbox, c: "bg-[#E3F1FF] text-[#2F8CE8]" },
+  { v: "73%", l: "Svarsfrekvens", d: P.mail, c: "bg-[#DFF6E8] text-[#22A35E]" },
+  { v: "3", l: "Kommande intervjuer", d: P.briefcase, c: "bg-[#EFE9FE] text-[#7C5CE8]" },
+];
+ 
+const bars = [22, 10, 14, 20, 38, 50, 20, 12, 60, 42, 40, 55, 62, 45, 78, 48, 82, 56, 66, 30, 22, 40, 26, 18, 30, 44, 76, 50];
+ 
+const rows = [
+  { job: "Frontend Developer", co: "Spotify", date: "2025-09-01", st: "Skickad", tile: "S", tc: "bg-[#1FBF63]", pill: "bg-[#E8EEFE] text-[#4F5BE8]" },
+  { job: "Systemutvecklare", co: "Klarna", date: "2025-08-20", st: "Svar mottaget", tile: "K", tc: "bg-[#F472A8]", pill: "bg-[#EFE9FE] text-[#7C5CE8]" },
+  { job: "Backend Developer", co: "Northvolt", date: "2025-08-19", st: "Intervju", tile: "K", tc: "bg-[#DC2F3E]", pill: "bg-[#FFF1E0] text-[#E8890C]" },
+  { job: "Fullstack Developer", co: "ICA", date: "2025-08-19", st: "Skickad", tile: "n", tc: "bg-[#111]", pill: "bg-[#E8EEFE] text-[#4F5BE8]" },
+];
+ 
+const CheckDot = () => (
+  <span className="w-5 h-5 rounded-full bg-[#22A35E] flex items-center justify-center shrink-0">
+    <Icon d={P.check} size={12} className="text-white" />
+  </span>
+);
+ 
+const Card = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
+  <div className={`bg-white rounded-xl border border-[#EEF1FA] shadow-sm shadow-[#4F5BE8]/5 ${className}`}>{children}</div>
+);
+ 
 export default function Home() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <main className="font-[Inter] text-[#152238] bg-[#F4F9FF]">
       <style>{`
@@ -9,462 +87,230 @@ export default function Home() {
         }
         .fade-up { opacity: 0; animation: fadeUp 0.7s ease-out forwards; }
       `}</style>
-{/* NAVBAR */}
-<nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[#DCE7F5]">
-  <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-    <span className="font-['Space_Grotesk'] text-xl font-bold text-[#12294D] tracking-tight">
-      Hire<span className="text-[#2F7BE0]">Path</span>
-    </span>
-    <div className="hidden md:flex items-center gap-8 text-sm text-[#4A6076]">
-      <a href="#jobb" className="hover:text-[#12294D] transition-colors">Hitta jobb</a>
-      <a href="#kategorier" className="hover:text-[#12294D] transition-colors">Kategorier</a>
-      <a href="#foretag" className="hover:text-[#12294D] transition-colors">Företag</a>
-      <a href="#omdomen" className="hover:text-[#12294D] transition-colors">Omdömen</a>
-    </div>
-    <div className="flex items-center gap-3">
-      <Link
-        href="/login"
-        className="text-sm text-[#4A6076] hover:text-[#12294D] transition-colors"
-      >
-        Logga in
-      </Link>
-      <button className="text-sm px-4 py-2 rounded-md bg-[#2F7BE0] text-white font-medium hover:bg-[#1E5FC2] transition-colors shadow-sm shadow-[#2F7BE0]/20">
-        Annonsera jobb
-      </button>
-    </div>
-  </div>
-</nav>
-
-    {/* HERO */}
-<section className="relative pt-20 pb-24 px-6 overflow-hidden bg-gradient-to-br from-white via-white to-[#EEF5FF]">
-  {/* Background glow */}
-  <div className="absolute top-0 right-0 w-[36rem] h-[36rem] bg-[#CFE6FF] rounded-full blur-3xl opacity-50 -translate-y-1/3 translate-x-1/4" />
-
-  <div className="relative max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-    {/* LEFT COLUMN */}
-    <div>
-      <span className="inline-block text-xs font-bold tracking-wide text-[#2F7BE0] bg-[#E4F0FF] px-4 py-2 rounded-full border border-[#CFE1FA]">
-        SVERIGES SMARTASTE REKRYTERINGSPLATTFORM
-      </span>
-
-      <h1 className="font-['Space_Grotesk'] text-6xl font-extrabold leading-[1.05] tracking-tight mt-6">
-        <span className="text-[#0A0F1A]">Hitta kandidaten<br />som passar<br />tjänsten.</span>
-        <br />
-        <span className="text-[#2F7BE0]">Inte bara CV:t.</span>
-      </h1>
-
-      <p className="mt-6 text-lg text-[#4A6076] max-w-md leading-relaxed">
-        Jobbportal samlar ansökningar, CV:n och verklig kandidataktivitet på
-        ett ställe — så att du snabbt hittar rätt person, skickar
-        erbjudande och håller koll på hela rekryteringsprocessen.
-      </p>
-
-      <div className="mt-9 flex flex-wrap items-center gap-3">
-       <button className="flex items-center gap-2 px-6 py-3.5 bg-[#2F7BE0] text-white text-sm font-semibold rounded-full hover:bg-[#1E5FC2] hover:shadow-lg hover:shadow-[#2F7BE0]/25 transition-all">
-  Sök jobb
-  <span aria-hidden>→</span>
-</button>
-<button className="flex items-center gap-2 px-6 py-3.5 bg-white text-[#12294D] text-sm font-semibold rounded-full border border-[#DCE7F5] hover:border-[#2F7BE0]/40 transition-colors">
-  <span className="w-6 h-6 rounded-full bg-[#2F7BE0] flex items-center justify-center text-white text-xs">▶</span>
-  Skapa CV gratis
-</button>
-      </div>
-
-      <div className="mt-8 flex flex-wrap items-center gap-6 text-sm font-medium text-[#12294D]">
-        <span className="flex items-center gap-1.5">
-          <span className="text-[#2F7BE0]">✓</span> Verifierade kandidater
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-[#2F7BE0]">✓</span> Automatiska CV-matchningar
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-[#2F7BE0]">✓</span> Klart på under 5 minuter
-        </span>
-      </div>
-    </div>
-
-    {/* RIGHT COLUMN — dashboard mockup */}
-    <div className="relative">
-      <div className="rounded-2xl bg-white shadow-2xl shadow-[#2F7BE0]/10 border border-[#E4F0FF] overflow-hidden">
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E4F0FF]">
-          <span className="font-['Space_Grotesk'] text-lg font-bold text-[#12294D]">Jobbportal</span>
-          <div className="flex-1 max-w-xs mx-6 flex items-center gap-2 bg-[#F4F8FE] rounded-lg px-3 py-2">
-            <span className="text-[#9AAEC4] text-xs">🔍</span>
-            <span className="text-xs text-[#9AAEC4]">Sök kandidat eller roll...</span>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-[#CFE6FF]" />
-        </div>
-
-        <div className="flex">
-          {/* Sidebar */}
-          <div className="w-36 border-r border-[#E4F0FF] py-4 px-3 flex flex-col gap-1 text-sm">
-            {[
-              { label: "Dashboard", active: true },
-              { label: "Arbetsgivare" },
-              { label: "Jobbsökande" },
-              { label: "CV & Ansökningar" },
-              { label: "Avtal" },
-              { label: "Mallar" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className={`px-3 py-2 rounded-lg ${
-                  item.active
-                    ? "bg-[#E4F0FF] text-[#2F7BE0] font-semibold"
-                    : "text-[#6B7E96]"
-                }`}
-              >
-                {item.label}
-              </div>
-            ))}
-          </div>
-
-          {/* Table area */}
-          <div className="flex-1 p-5">
-            <div className="flex items-center gap-2 bg-[#F4F8FE] rounded-lg px-3 py-2.5 mb-4">
-              <span className="text-xs text-[#9AAEC4] flex-1">
-                Frontend-utvecklare med 3+ års erfarenhet, Stockholm
-              </span>
-              <button className="px-4 py-1.5 bg-[#2F7BE0] text-white text-xs font-semibold rounded-md">
-                Sök
-              </button>
-            </div>
-
-            <div className="grid grid-cols-4 text-[11px] font-semibold text-[#9AAEC4] px-2 pb-2">
-              <span>Kandidat</span>
-              <span>Roll</span>
-              <span>Ort</span>
-              <span>Matchning</span>
-            </div>
-
-            {[
-              { name: "Ella Nyström", role: "UX-designer", city: "Stockholm", pct: "94%", color: "#22A55A" },
-              { name: "Amina Yusuf", role: "Frontend-utv.", city: "Stockholm", pct: "91%", color: "#22A55A" },
-              { name: "Fatima Al-Sayed", role: "Sjuksköterska", city: "Malmö", pct: "87%", color: "#22A55A" },
-              { name: "Daniel Berg", role: "Backend-utv.", city: "Linköping", pct: "76%", color: "#F5A623" },
-              { name: "Erik Holm", role: "Lagerarbetare", city: "Uppsala", pct: "68%", color: "#F5A623" },
-            ].map((row) => (
-              <div
-                key={row.name}
-                className="grid grid-cols-4 items-center text-xs px-2 py-2.5 border-t border-[#F0F4FA]"
-              >
-                <span className="flex items-center gap-2 font-medium text-[#12294D]">
-                  <span className="w-6 h-6 rounded-full bg-[#E4F0FF]" />
-                  {row.name}
-                </span>
-                <span className="text-[#6B7E96]">{row.role}</span>
-                <span className="text-[#6B7E96]">{row.city}</span>
-                <span
-                  className="text-white text-[10px] font-semibold px-2 py-0.5 rounded-full w-fit"
-                  style={{ backgroundColor: row.color }}
-                >
-                  {row.pct}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Floating stat card */}
-      <div className="absolute -left-6 -bottom-8 bg-white rounded-xl shadow-xl shadow-[#2F7BE0]/15 border border-[#E4F0FF] px-5 py-4 w-56">
-        <div className="text-xs text-[#6B7E96] font-medium mb-1">Nya matchande ansökningar</div>
-        <div className="flex items-end justify-between">
-          <span className="font-['Space_Grotesk'] text-3xl font-bold text-[#12294D]">1 248</span>
-          <span className="text-xs font-semibold text-[#2F7BE0] bg-[#E4F0FF] px-2 py-1 rounded-full mb-1">↑ +24%</span>
-        </div>
-        <svg viewBox="0 0 200 50" className="w-full h-10 mt-2">
-          <polyline
-            points="0,40 20,38 40,30 60,32 80,24 100,26 120,18 140,20 160,10 180,8 200,4"
+  <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[#DCE7F5]">
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        {/* Logo: icon + wordmark */}
+        <Link href="/" className="flex shrink-0 items-center gap-2">
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
             fill="none"
-            stroke="#2F7BE0"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-    </div>
-  </div>
-</section>
-      {/* TRUSTED BY */}
-      <section className="py-10 border-y border-[#E4F0FF] bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <p className="text-center text-xs tracking-wide text-[#9AAEC4] mb-6">
-            Företag som redan anställer via HirePath
-          </p>
-          <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-[#3F5875] font-['Space_Grotesk'] font-semibold text-lg opacity-70">
-            <span>Northlight</span>
-            <span>Ferrous</span>
-            <span>Marrow</span>
-            <span>Cascade</span>
-            <span>Polarigo</span>
-            <span>Ombra</span>
-          </div>
-        </div>
-      </section>
-
-      {/* STATS STRIP */}
-      <section className="bg-[#0B2D5C] py-12">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            ["12 400", "lediga tjänster"],
-            ["3 900", "anställande företag"],
-            ["68 000", "tillsatta kandidater"],
-            ["4,8/5", "genomsnittligt betyg"],
-          ].map(([n, label]) => (
-            <div key={label}>
-              <div className="font-['Space_Grotesk'] text-3xl font-bold text-white">{n}</div>
-              <div className="text-sm text-[#8FB4E8] mt-1">{label}</div>
-            </div>
+            aria-hidden="true"
+            className="text-[#4F5BE8]"
+          >
+            <path
+              d="M21 3 3 10.5l7 3 3 7L21 3Z"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="font-['Space_Grotesk'] text-base sm:text-lg font-bold text-[#12294D] tracking-tight">
+            JobbAuto
+          </span>
+        </Link>
+ 
+        {/* Centered links */}
+        <div className="hidden md:flex items-center justify-center gap-6 xl:gap-8 text-sm font-medium text-[#12294D]">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="hover:text-[#4F5BE8] transition-colors"
+            >
+              {l.label}
+            </a>
           ))}
         </div>
-      </section>
+ 
+        {/* Actions: outlined secondary + solid primary */}
+        <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/login"
+            className="hidden sm:inline-flex text-xs sm:text-sm font-medium px-3 py-2 sm:px-4 rounded-lg bg-white text-[#12294D] border border-[#DCE7F5] shadow-sm hover:bg-[#F5F8FD] transition-colors"
+          >
+            Logga in
+          </Link>
+          <button className="hidden md:inline-flex text-[11px] sm:text-sm font-medium px-3 py-2 sm:px-4 rounded-lg bg-[#4F5BE8] text-white shadow-sm shadow-[#4F5BE8]/25 hover:bg-[#3F4AD0] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4F5BE8]">
+            Annonsera jobb
+          </button>
 
-      {/* HOW IT WORKS */}
-      <section className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-[#0B2D5C] text-center">
-            Så funkar det
-          </h2>
-          <p className="text-[#7B93AF] text-center mt-3 max-w-lg mx-auto">
-            Tre steg mellan dig och din nästa roll.
-          </p>
-
-          <div className="mt-16 grid md:grid-cols-3 gap-10 relative">
-            <div className="hidden md:block absolute top-6 left-[16%] right-[16%] h-px bg-[#DCE9FA]" />
-            {[
-              { step: "1", title: "Skapa din profil", text: "Lägg till din erfarenhet, dina kompetenser och vad du letar efter." },
-              { step: "2", title: "Matchas med roller", text: "Vi visar tjänster som faktiskt passar din bakgrund, inte allt som finns." },
-              { step: "3", title: "Sök med ett klick", text: "Ansök direkt genom plattformen och följ status i realtid." },
-            ].map((s) => (
-              <div key={s.step} className="relative bg-[#F4F9FF] text-center md:text-left">
-                <div className="w-12 h-12 rounded-full bg-[#2E7BF6] text-white font-['Space_Grotesk'] font-bold flex items-center justify-center mx-auto md:mx-0 relative z-10">
-                  {s.step}
-                </div>
-                <h3 className="mt-5 font-semibold text-lg text-[#0B2D5C]">{s.title}</h3>
-                <p className="mt-2 text-sm text-[#7B93AF] leading-relaxed">{s.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CATEGORIES */}
-      <section id="kategorier" className="py-24 px-6 bg-white border-y border-[#E4F0FF]">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-end justify-between mb-12">
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-[#0B2D5C]">
-              Populära kategorier
-            </h2>
-            <a href="#" className="text-sm text-[#2E7BF6] hover:text-[#1f68dd] font-medium">
-              Visa alla
-            </a>
-          </div>
-
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
-            {[
-              { name: "Utveckling", count: "3 240 tjänster", icon: "M4 6h16M4 12h10M4 18h16" },
-              { name: "Design", count: "1 180 tjänster", icon: "M12 4l3 3-9 9-3 1 1-3 8-8-3-3z" },
-              { name: "Data & analys", count: "960 tjänster", icon: "M4 19V9m6 10V4m6 15v-6" },
-              { name: "Marknadsföring", count: "1 420 tjänster", icon: "M4 4l16 8-16 8V4z" },
-            ].map((cat) => (
-              <div
-                key={cat.name}
-                className="group p-6 rounded-xl border border-[#E4F0FF] hover:border-[#2E7BF6] hover:shadow-md hover:shadow-[#BFDBFF]/50 transition-all cursor-pointer"
-              >
-                <svg
-                  className="w-8 h-8 text-[#2E7BF6]"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d={cat.icon} />
-                </svg>
-                <h3 className="mt-4 font-semibold text-[#0B2D5C]">{cat.name}</h3>
-                <p className="text-sm text-[#7B93AF] mt-1">{cat.count}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURED JOBS */}
-      <section id="jobb" className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-end justify-between mb-12">
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-[#0B2D5C]">
-              Nytt denna vecka
-            </h2>
-            <a href="#" className="text-sm text-[#2E7BF6] hover:text-[#1f68dd] font-medium">
-              Visa alla tjänster
-            </a>
-          </div>
-
-          <div className="divide-y divide-[#E4F0FF]">
-            {[
-              { title: "Senior frontendutvecklare", company: "Northlight Labs", location: "Distans · Heltid", pay: "95 000–120 000 kr" },
-              { title: "Produktdesigner", company: "Ferrous Studio", location: "Stockholm · Hybrid", pay: "60 000–80 000 kr" },
-              { title: "Dataanalytiker", company: "Marrow Health", location: "Distans · Konsult", pay: "50 000–70 000 kr" },
-              { title: "Backendutvecklare (Go)", company: "Cascade Systems", location: "Göteborg · På plats", pay: "70 000–95 000 kr" },
-            ].map((job) => (
-              <div
-                key={job.title}
-                className="flex flex-col sm:flex-row sm:items-center justify-between py-6 group cursor-pointer"
-              >
-                <div>
-                  <h3 className="font-medium text-lg text-[#152238] group-hover:text-[#2E7BF6] transition-colors">
-                    {job.title}
-                  </h3>
-                  <p className="text-sm text-[#7B93AF] mt-1">
-                    {job.company} — {job.location}
-                  </p>
-                </div>
-                <div className="mt-3 sm:mt-0 text-sm font-medium text-[#0B2D5C]">
-                  {job.pay}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TOP COMPANIES */}
-      <section id="foretag" className="py-24 px-6 bg-white border-y border-[#E4F0FF]">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-[#0B2D5C] mb-12">
-            Företag som anställer nu
-          </h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[
-              { name: "Northlight Labs", desc: "Produktutveckling för fintech.", roles: "12 lediga roller" },
-              { name: "Ferrous Studio", desc: "Designbyrå för digitala produkter.", roles: "5 lediga roller" },
-              { name: "Marrow Health", desc: "Hälsoteknik och patientdata.", roles: "8 lediga roller" },
-            ].map((c) => (
-              <div key={c.name} className="p-6 rounded-xl bg-[#F4F9FF] border border-[#E4F0FF]">
-                <div className="w-10 h-10 rounded-lg bg-[#2E7BF6]/10 flex items-center justify-center font-['Space_Grotesk'] font-bold text-[#2E7BF6]">
-                  {c.name.charAt(0)}
-                </div>
-                <h3 className="mt-4 font-semibold text-[#0B2D5C]">{c.name}</h3>
-                <p className="text-sm text-[#7B93AF] mt-1">{c.desc}</p>
-                <p className="text-sm text-[#2E7BF6] mt-4 font-medium">{c.roles}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS */}
-      <section id="omdomen" className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-[#0B2D5C] text-center mb-14">
-            Vad kandidater säger
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { quote: "Jag fick tre intervjuer på en vecka. Matchningarna var faktiskt relevanta.", name: "Elin Berg", role: "Frontendutvecklare" },
-              { quote: "Sökprocessen kändes för första gången inte som ett heltidsjobb i sig.", name: "Marcus Holm", role: "Produktdesigner" },
-              { quote: "Bytte bransch helt via en roll jag hittade här. Rekommenderar starkt.", name: "Sara Lindqvist", role: "Dataanalytiker" },
-            ].map((t) => (
-              <div key={t.name} className="p-7 rounded-xl border border-[#E4F0FF] bg-white">
-                <p className="text-[#152238] leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#E4F0FF] flex items-center justify-center text-[#2E7BF6] font-semibold text-sm">
-                    {t.name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-[#0B2D5C]">{t.name}</div>
-                    <div className="text-xs text-[#7B93AF]">{t.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-[#0B2D5C] py-24 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-['Space_Grotesk'] text-3xl md:text-4xl font-bold text-white">
-            Din nästa roll är bara en sökning bort
-          </h2>
-          <p className="mt-4 text-[#BFDBFF]">
-            Skapa en profil en gång. Låt rätt företag komma till dig.
-          </p>
-          <button className="mt-8 px-8 py-3.5 bg-[#2E7BF6] text-white font-medium rounded-md hover:bg-[#1f68dd] transition-colors">
-            Skapa din profil
+          <button
+            type="button"
+            aria-label={mobileOpen ? "Stäng meny" : "Öppna meny"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((open) => !open)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#DCE7F5] bg-white text-[#12294D] shadow-sm md:hidden"
+          >
+            <span className="sr-only">Menu</span>
+            <span className="flex flex-col gap-1.5">
+              <span className={`block h-0.5 w-5 rounded-full bg-current transition-all ${mobileOpen ? "translate-y-2 rotate-45" : ""}`} />
+              <span className={`block h-0.5 w-5 rounded-full bg-current transition-all ${mobileOpen ? "opacity-0" : ""}`} />
+              <span className={`block h-0.5 w-5 rounded-full bg-current transition-all ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`} />
+            </span>
           </button>
         </div>
-      </section>
+      </div>
 
-      {/* NEWSLETTER */}
-      <section className="py-16 px-6 bg-white border-t border-[#E4F0FF]">
-        <div className="max-w-2xl mx-auto text-center">
-          <h3 className="font-['Space_Grotesk'] text-xl font-bold text-[#0B2D5C]">
-            Få nya tjänster i din inkorg
-          </h3>
-          <p className="text-sm text-[#7B93AF] mt-2">
-            En gång i veckan, inga extra utskick.
-          </p>
-          <div className="mt-6 flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Din e-postadress"
-              className="flex-1 px-4 py-3 rounded-lg outline-none text-sm border border-[#E4F0FF] text-[#152238] placeholder:text-[#9AAEC4]"
-            />
-            <button className="px-6 py-3 bg-[#2E7BF6] text-white text-sm font-medium rounded-lg hover:bg-[#1f68dd] transition-colors">
-              Prenumerera
+      {mobileOpen && (
+        <div className="border-t border-[#DCE7F5] bg-white/95 md:hidden">
+          <div className="max-w-[1400px] mx-auto flex flex-col gap-2 px-4 py-3 text-sm font-medium text-[#12294D]">
+            {links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-3 py-2 hover:bg-[#EEF0FF] hover:text-[#4F5BE8] transition-colors"
+              >
+                {l.label}
+              </a>
+            ))}
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="mt-1 rounded-lg border border-[#DCE7F5] bg-white px-3 py-2 text-center text-[#12294D]"
+            >
+              Logga in
+            </Link>
+            <button className="rounded-lg bg-[#4F5BE8] px-3 py-2 text-white shadow-sm shadow-[#4F5BE8]/25">
+              Annonsera jobb
             </button>
           </div>
         </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="bg-[#0B2D5C] py-14 px-6">
-        <div className="max-w-6xl mx-auto grid sm:grid-cols-2 md:grid-cols-4 gap-10">
-          <div>
-            <span className="font-['Space_Grotesk'] text-xl font-bold text-white">
-              Hire<span className="text-[#5B9BFF]">Path</span>
+      )}
+    </nav>
+  <section className="relative overflow-hidden font-['Inter'] pt-24 pb-16 px-4 sm:px-6 md:pt-28 md:pb-20 bg-gradient-to-br from-[#F1F5FE] via-white to-[#EEF1FD]">
+      <div className="relative max-w-[1400px] mx-auto grid gap-8 lg:grid-cols-[0.95fr_1.55fr] lg:gap-14 items-center">
+        {/* LEFT */}
+        <div>
+          <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-[#4F5BE8] bg-[#ECEFFD] px-4 py-2 rounded-full">
+            <span>• Spara tid</span>
+            <span>• Få fler intervjuer</span>
+            <span>• Helt automatiskt</span>
+          </span>
+ 
+          <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.08] tracking-tight text-[#0B1220]">
+            Automatiska
+            <br />
+            jobbansökningar
+            <br />
+            som{" "}
+            <span className="bg-gradient-to-r from-[#3B4FD8] to-[#6D5CF0] bg-clip-text text-transparent">
+              gör jobbet åt dig.
             </span>
-            <p className="text-sm text-[#8FB4E8] mt-3 max-w-xs">
-              Vi kopplar samman skickliga människor med företag som letar efter dem.
-            </p>
+          </h1>
+ 
+          <p className="mt-6 text-base sm:text-lg text-[#5B6B82] max-w-lg leading-relaxed">
+            Skapa din profil, välj vilka jobb du vill söka och låt JobbAuto skicka personliga
+            ansökningar automatiskt – så att du kan fokusera på intervjuer och nästa steg i karriären.
+          </p>
+ 
+          <div className="mt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4">
+            <button className="flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold text-white bg-[#4F5BE8] shadow-md shadow-[#4F5BE8]/25 hover:bg-[#3F4AD0] transition-colors">
+              Kom igång gratis <span aria-hidden>→</span>
+            </button>
+            <button className="flex items-center justify-center gap-3 px-6 py-3.5 rounded-lg text-sm font-semibold text-[#12294D] bg-white border border-[#4F5BE8]/60 hover:bg-[#F5F6FE] transition-colors">
+              <span className="w-6 h-6 rounded-full bg-[#4F5BE8] flex items-center justify-center text-white">
+                <svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor"><path d="M2 1l7 4-7 4V1Z" /></svg>
+              </span>
+              Se hur det fungerar
+            </button>
           </div>
-          <div>
-            <h4 className="text-white text-sm font-semibold mb-4">För kandidater</h4>
-            <div className="flex flex-col gap-2 text-sm text-[#8FB4E8]">
-              <a href="#" className="hover:text-white transition-colors">Sök jobb</a>
-              <a href="#" className="hover:text-white transition-colors">Skapa profil</a>
-              <a href="#" className="hover:text-white transition-colors">Karriärguider</a>
-            </div>
+ 
+          <ul className="mt-8 space-y-3 text-[15px] text-[#5B6B82]">
+            {["Personliga ansökningar med AI", "Koppla din egen e-post – tryggt och säkert", "Spara timmar varje vecka"].map((t) => (
+              <li key={t} className="flex items-center gap-3"><CheckDot />{t}</li>
+            ))}
+          </ul>
+        </div>
+ 
+        {/* RIGHT — app window */}
+        <div className="w-full max-w-[820px] justify-self-end rounded-xl bg-white border border-[#E6EAF7] shadow-2xl shadow-[#4F5BE8]/10 overflow-hidden">
+          <div className="flex items-center gap-1.5 px-4 py-2.5">
+            <span className="w-2 h-2 rounded-full bg-[#FF5F57]" />
+            <span className="w-2 h-2 rounded-full bg-[#FEBC2E]" />
+            <span className="w-2 h-2 rounded-full bg-[#28C840]" />
+            <span className="ml-4 h-2 w-1/3 rounded-full bg-[#F1F4FA]" />
           </div>
-          <div>
-            <h4 className="text-white text-sm font-semibold mb-4">För företag</h4>
-            <div className="flex flex-col gap-2 text-sm text-[#8FB4E8]">
-              <a href="#" className="hover:text-white transition-colors">Annonsera jobb</a>
-              <a href="#" className="hover:text-white transition-colors">Priser</a>
-              <a href="#" className="hover:text-white transition-colors">Rekryteringshjälp</a>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-white text-sm font-semibold mb-4">Företaget</h4>
-            <div className="flex flex-col gap-2 text-sm text-[#8FB4E8]">
-              <a href="#" className="hover:text-white transition-colors">Om oss</a>
-              <a href="#" className="hover:text-white transition-colors">Integritet</a>
-              <a href="#" className="hover:text-white transition-colors">Villkor</a>
-              <a href="#" className="hover:text-white transition-colors">Kontakt</a>
+ 
+          <div className="flex">
+            {/* Sidebar */}
+            <aside className="hidden md:flex w-44 shrink-0 flex-col gap-0.5 px-3 pb-6 text-[11px]">
+              <div className="flex items-center gap-2 px-2 py-2 mb-2 font-bold text-[#12294D]">
+                <Icon d={P.plane} size={18} className="text-[#4F5BE8] fill-[#4F5BE8]" /> JobbAuto
+              </div>
+              {nav.map((n) => (
+                <div key={n.label}
+                  className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg ${n.active ? "bg-[#EEF0FF] text-[#4F5BE8] font-semibold" : "text-[#5B6B82]"}`}>
+                  <Icon d={n.d} size={13} /> {n.label}
+                </div>
+              ))}
+            </aside>
+ 
+            {/* Main */}
+            <div className="flex-1 min-w-0 bg-[#FAFBFE] p-5 space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-[#0B1220]">Hej Erik!</h3>
+                <p className="text-[10px] text-[#8A99AE] mt-0.5">Här är en översikt över din jobbsökning.</p>
+              </div>
+ 
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {stats.map((s) => (
+                  <Card key={s.l} className="p-3.5">
+                    <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${s.c}`}><Icon d={s.d} size={14} /></span>
+                    <div className="mt-3 text-lg font-bold text-[#0B1220] leading-none">{s.v}</div>
+                    <div className="mt-1 text-[9px] text-[#8A99AE]">{s.l}</div>
+                  </Card>
+                ))}
+              </div>
+ 
+              <Card className="p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-[#0B1220]">Ansökningar över tid</span>
+                  <span className="text-[9px] text-[#5B6B82] border border-[#E6EAF7] rounded-md px-2 py-1">Senaste 30 dagarna ⌄</span>
+                </div>
+                <div className="mt-4 flex items-end gap-[3%] h-28 border-b border-[#EEF1FA]">
+                  {bars.map((h, i) => (
+                    <div key={i} className="flex-1 rounded-t-sm bg-gradient-to-t from-[#B8C0FA] to-[#4F5BE8]" style={{ height: `${h}%` }} />
+                  ))}
+                </div>
+                <div className="mt-1.5 flex justify-between text-[8px] text-[#8A99AE]">
+                  {["26 aug", "2 sep", "9 sep", "16 sep", "23 sep", "30 sep"].map((d) => <span key={d}>{d}</span>)}
+                </div>
+              </Card>
+ 
+              <Card className="p-4">
+                <div className="text-[11px] font-semibold text-[#0B1220] mb-2">Senaste ansökningar</div>
+                <div className="grid grid-cols-[1.6fr_1.2fr_1fr_1fr] text-[9px] font-semibold text-[#0B1220] pb-2">
+                  <span>Tjänst</span><span>Företag</span><span>Datum</span><span>Status</span>
+                </div>
+                {rows.map((r) => (
+                  <div key={r.job + r.date + r.co} className="grid grid-cols-[1.6fr_1.2fr_1fr_1fr] items-center text-[9px] py-2 border-t border-[#F0F3FA]">
+                    <span className="flex items-center gap-2 font-semibold text-[#0B1220]">
+                      <span className={`w-5 h-5 rounded-md text-white text-[9px] font-bold flex items-center justify-center ${r.tc}`}>{r.tile}</span>
+                      <span className="truncate">{r.job}</span>
+                    </span>
+                    <span className="text-[#5B6B82]">{r.co}</span>
+                    <span className="text-[#8A99AE]">{r.date}</span>
+                    <span className={`w-fit px-2 py-1 rounded-md font-medium ${r.pill}`}>{r.st}</span>
+                  </div>
+                ))}
+              </Card>
             </div>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-white/10 text-sm text-[#6D93C4]">
-          © 2026 HirePath. Alla rättigheter förbehållna.
-        </div>
-      </footer>
+      </div>
+    </section>
+   <LogoStrip />
+   <HowItWorks  />
+   <Features />
+   <Pricing />
+   <Testimonials />
+   <Faq />
+   <Footer />
+    
     </main>
   );
 }
