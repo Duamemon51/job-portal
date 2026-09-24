@@ -1,45 +1,74 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
-  Building2,
-  Users,
-  FileText,
-  FileSignature,
-  Mail,
-  IdCard,
-  LayoutTemplate,
-  LogOut,
-  UserRound,
+  Home,
+  Search,
+  FileCheck,
+  User,
+  Folder,
+  SlidersHorizontal,
   Settings,
-  Plus,
-  Minus,
+  Mail,
+  FileText,
+  BarChart3,
+  Bell,
+  Crown,
+  HelpCircle,
+  LogOut,
+  Send,
 } from "lucide-react";
-import { useAuth, useCurrentUser } from "@/context/AuthContext";
-import { DOCUMENT_CATEGORY_LABELS } from "@/lib/mock-data";
-import type { DocumentCategory } from "@/lib/types";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
-const NAV_ITEMS = [
-  { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/app/arbetsgivare", label: "Arbetsgivare", icon: Building2 },
-  { href: "/app/jobbsokande", label: "Jobbsökande", icon: Users },
+/**
+ * Theme (from the reference screenshot)
+ * - Sidebar bg:      #192436
+ * - Active item:     #6366f1 pill, white text
+ * - Inactive text:   white, hover -> white + white/5 bg
+ * - Dividers:        slate-600 (dark grey)
+ */
+
+type NavLink = {
+  href: string;
+  label: string;
+  icon: typeof Home;
+  badgeKey?: "notifications";
+};
+
+// TODO: adjust hrefs to your real routes.
+const MAIN_LINKS: NavLink[] = [
+  { href: "/app/oversikt", label: "Översikt", icon: Home },
+  { href: "/app/lediga-tjanster", label: "Lediga tjänster", icon: Search },
+  { href: "/app/mina-ansokta-jobb", label: "Mina ansökta jobb", icon: FileCheck },
+  { href: "/app/profil", label: "Profil", icon: User },
+  { href: "/app/cv-och-dokument", label: "CV och dokument", icon: Folder },
+  { href: "/app/jobbpreferenser", label: "Jobbpreferenser", icon: SlidersHorizontal },
+  { href: "/app/ansokningsinstallningar", label: "Ansökningsinställningar", icon: Settings },
+  { href: "/app/epostintegration", label: "E-postintegration", icon: Mail },
+  { href: "/app/mallar", label: "Mallar", icon: FileText },
+  { href: "/app/aktivitet", label: "Aktivitet & statistik", icon: BarChart3 },
+  { href: "/app/notiser", label: "Notiser", icon: Bell, badgeKey: "notifications" },
 ];
 
-const DOCUMENT_CATEGORIES = Object.entries(DOCUMENT_CATEGORY_LABELS) as [DocumentCategory, string][];
+const SECONDARY_LINKS: NavLink[] = [
+  { href: "/app/prenumeration", label: "Prenumeration", icon: Crown },
+];
 
-const DOCUMENT_CATEGORY_ICONS: Record<DocumentCategory, typeof FileText> = {
-  resumes: FileText,
-  contracts: FileSignature,
-  offer_letters: Mail,
-  id_verification: IdCard,
-  templates: LayoutTemplate,
-};
+const HELP_HREF = "/app/hjalp";
+
+function rowClass(active: boolean, collapsed: boolean) {
+  return cn(
+    "relative flex items-center rounded-lg text-[13px] font-medium transition-colors duration-150",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]/60",
+    collapsed ? "mx-auto h-10 w-10 justify-center" : "gap-3 px-3 py-2.5",
+    active ? "bg-[#6366f1] text-white" : "text-white hover:bg-white/5"
+  );
+}
 
 function NavItem({
   href,
@@ -47,6 +76,7 @@ function NavItem({
   icon,
   collapsed,
   active,
+  badge,
   onNavigate,
 }: {
   href: string;
@@ -54,23 +84,28 @@ function NavItem({
   icon: ReactNode;
   collapsed: boolean;
   active: boolean;
+  badge?: number;
   onNavigate?: () => void;
 }) {
+  const showBadge = !!badge && badge > 0;
   return (
     <Link
       href={href}
       title={collapsed ? label : undefined}
       onClick={onNavigate}
-      className={cn(
-        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
-        collapsed ? "justify-center px-2" : "",
-        active
-          ? "bg-white/20 text-white shadow-lg shadow-black/20 backdrop-blur-sm border border-white/25"
-          : "text-white/70 hover:bg-white/10 hover:text-white"
-      )}
+      aria-current={active ? "page" : undefined}
+      className={rowClass(active, collapsed)}
     >
-      <span className={cn("shrink-0", collapsed ? "w-5 h-5" : "w-4 h-4")}>{icon}</span>
-      {!collapsed && <span className="font-medium tracking-wide">{label}</span>}
+      <span className="shrink-0">{icon}</span>
+      {!collapsed && <span className="flex-1 truncate">{label}</span>}
+      {showBadge &&
+        (collapsed ? (
+          <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-[#192436]" />
+        ) : (
+          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+            {badge}
+          </span>
+        ))}
     </Link>
   );
 }
@@ -78,10 +113,8 @@ function NavItem({
 function Brand({ collapsed }: { collapsed: boolean }) {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/20 bg-white/20 text-sm font-bold text-white shadow-md">
-        JP
-      </div>
-      {!collapsed && <div className="text-sm font-bold leading-tight text-white">Jobbportal</div>}
+      <Send className="h-6 w-6 shrink-0 fill-[#818cf8] text-[#818cf8]" strokeWidth={1.5} />
+      {!collapsed && <div className="text-[17px] font-bold tracking-tight text-white">JobbAuto</div>}
     </div>
   );
 }
@@ -89,232 +122,112 @@ function Brand({ collapsed }: { collapsed: boolean }) {
 export default function Sidebar({
   mobileOpen,
   onMobileClose,
+  notificationCount = 0,
 }: {
   mobileOpen: boolean;
   onMobileClose: () => void;
+  /** Unread notifications, shown as the red badge on "Notiser". */
+  notificationCount?: number;
 }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const user = useCurrentUser();
   const { logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [docsOpen, setDocsOpen] = useState(true);
-  const iconSize = collapsed ? "h-5 w-5" : "h-4 w-4";
+  const iconSize = "h-[18px] w-[18px]";
 
-  const onDocuments = pathname === "/app/dokument";
-  const activeCategory = searchParams.get("category");
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+
+  const renderLink = (item: NavLink) => (
+    <NavItem
+      key={item.href}
+      href={item.href}
+      label={item.label}
+      icon={<item.icon className={iconSize} />}
+      collapsed={collapsed}
+      active={isActive(item.href)}
+      badge={item.badgeKey === "notifications" ? notificationCount : undefined}
+      onNavigate={onMobileClose}
+    />
+  );
 
   const sidebarContent = (
     <aside
       className={cn(
-        "flex h-full flex-col transition-all duration-300 relative overflow-hidden shrink-0",
-        collapsed ? "w-[64px]" : "w-[260px]"
+        "flex h-full shrink-0 flex-col border-r !border-slate-600 bg-[#192436] transition-all duration-300",
+        collapsed ? "w-[68px]" : "w-[250px]"
       )}
-      style={{ background: "var(--sidebar-gradient)" }}
     >
-      {/* Background shades / depth layer */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at 10% 20%, rgba(255,255,255,0.10) 0%, transparent 55%), " +
-            "radial-gradient(ellipse at 90% 80%, rgba(0,0,0,0.08) 0%, transparent 60%)",
-        }}
-      />
-      {/* Subtle grid texture — the small squares visible across the whole sidebar background */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.12]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(255,255,255,1) 24px, rgba(255,255,255,1) 25px), " +
-            "repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(255,255,255,1) 24px, rgba(255,255,255,1) 25px)",
-        }}
-      />
-
       {/* Brand + collapse toggle */}
-      <div
-        className={cn(
-          "relative z-10 flex items-center justify-between px-4 py-4",
-          collapsed && "flex-col gap-2 px-2 py-3"
-        )}
-        style={{ background: "rgba(0,0,0,0.08)" }}
-      >
+      <div className={cn("flex items-center justify-between px-4 py-5", collapsed && "flex-col gap-3 px-2")}>
         <Brand collapsed={collapsed} />
         <button
           type="button"
           onClick={() => setCollapsed((v) => !v)}
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/70 transition-all duration-200 hover:bg-white/20 hover:text-white"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-white transition-colors hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]/60"
           title={collapsed ? "Expandera menyn" : "Minimera menyn"}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
 
-      {/* Navigation — same set of tabs for every role; only actions inside each tab change. */}
-      <div
-        className="relative z-10 flex-1 overflow-y-auto px-3 py-2"
-        style={{ background: "rgba(0,0,0,0.08)" }}
-      >
-
-        <div className="space-y-0.5">
-          {NAV_ITEMS.map((item) => (
-            <NavItem
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={<item.icon className={iconSize} />}
-              collapsed={collapsed}
-              active={pathname === item.href || pathname.startsWith(item.href + "/")}
-              onNavigate={onMobileClose}
-            />
-          ))}
-
-          {/* Dokument: a non-clickable heading; the +/− toggle expands or
-              collapses the five sub-categories below it. */}
-          {!collapsed && (
-            <div className="flex items-center justify-between px-3 pt-3 pb-1 select-none">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">
-                Dokument
-              </span>
-              <button
-                type="button"
-                onClick={() => setDocsOpen((v) => !v)}
-                aria-label={docsOpen ? "Dölj dokumentkategorier" : "Visa dokumentkategorier"}
-                aria-expanded={docsOpen}
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-white/50 transition-all duration-200 hover:text-white focus:outline-none"
-              >
-                {docsOpen ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-              </button>
-            </div>
-          )}
-
-          {!collapsed && docsOpen && (
-            <div className="ml-5 space-y-0.5 border-l border-white/15 pl-3">
-              {DOCUMENT_CATEGORIES.map(([key, label]) => {
-                const Icon = DOCUMENT_CATEGORY_ICONS[key];
-                const active = onDocuments && activeCategory === key;
-                return (
-                  <Link
-                    key={key}
-                    href={`/app/dokument?category=${key}`}
-                    onClick={onMobileClose}
-                    className={cn(
-                      "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
-                      active
-                        ? "bg-white/20 text-white shadow-lg shadow-black/20 backdrop-blur-sm border border-white/25"
-                        : "text-white/70 hover:bg-white/10 hover:text-white"
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <span className="tracking-wide">{label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Collapsed sidebar: no room for the "Dokument" heading, so show the
-              five category icons directly, same as the top-level nav icons. */}
-          {collapsed && (
-            <div className="space-y-0.5">
-              {DOCUMENT_CATEGORIES.map(([key, label]) => {
-                const Icon = DOCUMENT_CATEGORY_ICONS[key];
-                const active = onDocuments && activeCategory === key;
-                return (
-                  <Link
-                    key={key}
-                    href={`/app/dokument?category=${key}`}
-                    title={label}
-                    onClick={onMobileClose}
-                    className={cn(
-                      "flex items-center justify-center rounded-xl px-2 py-2.5 transition-all duration-200",
-                      active
-                        ? "bg-white/20 text-white shadow-lg shadow-black/20 backdrop-blur-sm border border-white/25"
-                        : "text-white/70 hover:bg-white/10 hover:text-white"
-                    )}
-                  >
-                    <Icon className="h-5 w-5 shrink-0" />
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Bottom: signed-in user email, quick actions, logout */}
-      <div className={cn("relative z-10 px-4 py-4 space-y-3", collapsed && "px-2")} style={{ background: "rgba(0,0,0,0.08)" }}>
-        {!collapsed && (
-          <div className="truncate text-sm font-medium text-white">{user.email}</div>
+      {/* Navigation */}
+      <nav
+        className={cn(
+          "flex-1 overflow-y-auto pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+          collapsed ? "px-2" : "px-3"
         )}
+      >
+        <div className="space-y-1">{MAIN_LINKS.map(renderLink)}</div>
 
-        <div className={cn("flex items-center gap-2", collapsed && "flex-col")}>
-          {!collapsed && (
-            <>
-              <Link
-                href="/app/installningar"
-                onClick={onMobileClose}
-                className={cn(
-                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-200",
-                  pathname === "/app/installningar"
-                    ? "border-white/25 bg-white/20 text-white"
-                    : "border-white/15 bg-white/10 text-white/85 hover:bg-white/20 hover:text-white"
-                )}
-                title="Inställningar"
-              >
-                <Settings className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/app/profil"
-                onClick={onMobileClose}
-                className={cn(
-                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-200",
-                  pathname === "/app/profil"
-                    ? "border-white/25 bg-white/20 text-white"
-                    : "border-white/15 bg-white/10 text-white/85 hover:bg-white/20 hover:text-white"
-                )}
-                title="Profil"
-              >
-                <UserRound className="h-4 w-4" />
-              </Link>
-            </>
+        <div className="my-3 border-t !border-slate-600" />
+
+        <div className="space-y-1">{SECONDARY_LINKS.map(renderLink)}</div>
+      </nav>
+
+      {/* Bottom: Hjälp + Logga ut */}
+      <div className={cn("space-y-1  py-3", collapsed ? "px-2" : "px-3")}>
+        <NavItem
+          href={HELP_HREF}
+          label="Hjälp"
+          icon={<HelpCircle className={iconSize} />}
+          collapsed={collapsed}
+          active={isActive(HELP_HREF)}
+          onNavigate={onMobileClose}
+        />
+
+        <button
+          type="button"
+          onClick={async () => {
+            setLoggingOut(true);
+            await logout();
+            router.push("/login");
+          }}
+          disabled={loggingOut}
+          title="Logga ut"
+          className={cn(
+            rowClass(false, collapsed),
+            "w-full cursor-pointer hover:bg-red-500/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
           )}
-
-          <button
-            type="button"
-            onClick={async () => {
-              setLoggingOut(true);
-              await logout();
-              router.push("/login");
-            }}
-            disabled={loggingOut}
-            className={cn(
-              "flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 text-sm font-semibold text-white/85 transition-all duration-200 hover:border-red-400/30 hover:bg-red-500/25 hover:text-red-100 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
-              collapsed ? "h-8 w-8 justify-center" : "flex-1 px-4 py-2"
-            )}
-            title="Logga ut"
-          >
-            <LogOut className="h-4 w-4" />
-            {!collapsed && (loggingOut ? "Loggar ut…" : "Logga ut")}
-          </button>
-        </div>
+        >
+          <LogOut className={cn(iconSize, "shrink-0")} />
+          {!collapsed && <span>{loggingOut ? "Loggar ut…" : "Logga ut"}</span>}
+        </button>
       </div>
     </aside>
   );
 
   return (
     <>
-      <div className="hidden lg:block sticky top-0 h-screen shrink-0">{sidebarContent}</div>
+      <div className="sticky top-0 hidden h-screen shrink-0 lg:block">{sidebarContent}</div>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={onMobileClose} aria-hidden="true" />
+        <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={onMobileClose} aria-hidden="true" />
       )}
 
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 h-full lg:hidden transition-transform duration-300",
+          "fixed inset-y-0 left-0 z-50 h-full transition-transform duration-300 lg:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

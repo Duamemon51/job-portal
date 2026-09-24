@@ -7,16 +7,10 @@ export type { SessionPayload } from "@/lib/auth-core";
 
 export async function hasValidSession() {
   const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
   if (!token) return false;
-
-  try {
-    jwt.verify(token, getJwtSecret());
-    return true;
-  } catch {
-    return false;
-  }
+  return verifySessionToken(token) !== null;
 }
 
 export async function setSessionCookie(userId: number, role: UserRole) {
