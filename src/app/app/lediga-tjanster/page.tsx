@@ -773,9 +773,8 @@ export default function LedigaTjansterPage() {
   const cityRows = CITY_OPTIONS.filter((c) => c.label.toLowerCase().includes(cityQuery.trim().toLowerCase()));
 
   return (
-    <div className="min-h-full bg-slate-50 px-4 py-8 sm:px-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        {/* Heading + auto apply */}
+    <div className="mx-auto max-w-7xl space-y-6">
+      {/* Heading + auto apply */}
         <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <nav aria-label="Brödsmula" className="flex items-center gap-1.5 text-xs text-slate-500">
@@ -1124,7 +1123,6 @@ export default function LedigaTjansterPage() {
             )}
           </main>
         </div>
-      </div>
     </div>
   );
 }

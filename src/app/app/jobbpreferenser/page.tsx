@@ -285,9 +285,8 @@ export default function JobbpreferenserPage() {
   };
 
   return (
-    <div className="min-h-full bg-slate-50 px-4 py-8 sm:px-8">
-      <div className="mx-auto max-w-6xl space-y-6">
-        {/* Breadcrumb + heading */}
+    <div className="mx-auto max-w-6xl space-y-6">
+      {/* Breadcrumb + heading */}
         <header>
           <nav aria-label="Brödsmula" className="flex items-center gap-1.5 text-xs text-slate-500">
             <Link href="/app/profil" className="transition-colors hover:text-slate-800">
@@ -573,7 +572,6 @@ export default function JobbpreferenserPage() {
             Spara preferenser
           </button>
         </div>
-      </div>
     </div>
   );
 }
