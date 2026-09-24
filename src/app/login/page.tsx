@@ -71,7 +71,6 @@ function LoginForm() {
           alt="Arbetsplats med laptop och växt"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0" style={{ background: "var(--sidebar-gradient)", opacity: 0.35 }} />
       </section>
 
       {/* RIGHT PANEL: FORM */}
