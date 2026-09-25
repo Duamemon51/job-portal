@@ -208,7 +208,7 @@ export default function MinaAnsoktaJobbPage() {
   const allOnPageSelected = pageRows.length > 0 && pageRows.every((r) => selected.has(r.id));
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Link href="/app/oversikt" className="hover:text-foreground hover:underline">

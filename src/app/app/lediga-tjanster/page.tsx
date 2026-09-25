@@ -773,7 +773,7 @@ export default function LedigaTjansterPage() {
   const cityRows = CITY_OPTIONS.filter((c) => c.label.toLowerCase().includes(cityQuery.trim().toLowerCase()));
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="space-y-6">
       {/* Heading + auto apply */}
         <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>

@@ -285,7 +285,7 @@ export default function JobbpreferenserPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="space-y-6">
       {/* Breadcrumb + heading */}
         <header>
           <nav aria-label="Brödsmula" className="flex items-center gap-1.5 text-xs text-slate-500">

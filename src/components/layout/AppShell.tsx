@@ -16,23 +16,23 @@ function FullPageLoader() {
 
 function AppFooter() {
   return (
-    <footer className="border-t border-border bg-card px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:px-8">
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,1fr)_1.2fr]">
+    <footer className="border-t border-border bg-card px-4 py-12 text-sm text-muted-foreground sm:px-6 lg:px-8">
+      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,1fr)_1.2fr]">
         <div>
-          <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-            <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary text-primary-foreground">
+          <div className="flex items-center gap-2 text-base font-bold text-foreground">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
               <Send className="h-4 w-4 fill-current" />
             </span>
             JobbAuto
           </div>
-          <p className="mt-3 max-w-[220px] text-xs leading-5">
+          <p className="mt-3 max-w-[240px] text-sm leading-6">
             Smidigare rekrytering för företag och jobbsökande.
           </p>
         </div>
 
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-foreground">Produkt</h2>
-          <div className="mt-3 space-y-2 text-xs">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">Produkt</h2>
+          <div className="mt-4 space-y-2.5 text-sm">
             <a href="/app/lediga-tjanster" className="block hover:text-foreground">Lediga tjänster</a>
             <a href="/app/arbetsgivare" className="block hover:text-foreground">För arbetsgivare</a>
             <a href="/app/jobbsokande" className="block hover:text-foreground">För jobbsökande</a>
@@ -40,8 +40,8 @@ function AppFooter() {
         </div>
 
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-foreground">Support</h2>
-          <div className="mt-3 space-y-2 text-xs">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">Support</h2>
+          <div className="mt-4 space-y-2.5 text-sm">
             <a href="/app/hjalp" className="block hover:text-foreground">Hjälpcenter</a>
             <a href="/app/hjalp" className="block hover:text-foreground">Kontakta oss</a>
             <a href="/app/installningar" className="block hover:text-foreground">Integritet</a>
@@ -49,8 +49,8 @@ function AppFooter() {
         </div>
 
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-foreground">Företaget</h2>
-          <div className="mt-3 space-y-2 text-xs">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">Företaget</h2>
+          <div className="mt-4 space-y-2.5 text-sm">
             <a href="/app/profil" className="block hover:text-foreground">Om JobbAuto</a>
             <a href="/app/hjalp" className="block hover:text-foreground">Karriär</a>
             <a href="/app/hjalp" className="block hover:text-foreground">Nyheter</a>
@@ -58,34 +58,34 @@ function AppFooter() {
         </div>
 
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-foreground">Följ oss</h2>
-          <div className="mt-3 flex items-center gap-2">
-            <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="grid h-7 w-7 place-items-center rounded-md bg-foreground text-[11px] font-bold text-card hover:bg-primary">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">Följ oss</h2>
+          <div className="mt-4 flex items-center gap-2.5">
+            <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="grid h-8 w-8 place-items-center rounded-md bg-foreground text-xs font-bold text-card hover:bg-primary">
               in
             </a>
-            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="grid h-7 w-7 place-items-center rounded-md bg-foreground text-sm font-bold text-card hover:bg-primary">
+            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="grid h-8 w-8 place-items-center rounded-md bg-foreground text-sm font-bold text-card hover:bg-primary">
               f
             </a>
-            <a href="https://www.instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="grid h-7 w-7 place-items-center rounded-md bg-foreground text-sm font-bold text-card hover:bg-primary">
-              <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <a href="https://www.instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="grid h-8 w-8 place-items-center rounded-md bg-foreground text-sm font-bold text-card hover:bg-primary">
+              <svg aria-hidden="true" className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="3" width="18" height="18" rx="5" />
                 <circle cx="12" cy="12" r="4" />
                 <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
               </svg>
             </a>
-            <a href="https://www.youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-7 w-7 place-items-center rounded-md bg-foreground text-[10px] font-bold text-card hover:bg-primary">
+            <a href="https://www.youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-8 w-8 place-items-center rounded-md bg-foreground text-xs font-bold text-card hover:bg-primary">
               ▶
             </a>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 border-t border-border pt-4 text-xs sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
         <span>© 2026 JobbAuto. Alla rättigheter förbehållna.</span>
         <button type="button" className="flex items-center gap-1.5 self-start hover:text-foreground sm:self-auto">
-          <span aria-hidden="true" className="text-sm">◎</span>
+          <span aria-hidden="true" className="text-base">◎</span>
           Svenska
-          <ChevronDown className="h-3.5 w-3.5" />
+          <ChevronDown className="h-4 w-4" />
         </button>
       </div>
     </footer>

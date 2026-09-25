@@ -301,7 +301,7 @@ export default function CvDokumentPage() {
   }
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Link href="/app/profil" className="hover:text-foreground hover:underline">
