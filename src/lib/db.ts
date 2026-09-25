@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import { SequelizeStorage, Umzug } from "umzug";
 import * as createUsers from "@/lib/migrations/001-create-users";
 import * as addPasswordResetFields from "@/lib/migrations/002-add-password-reset-fields";
+import * as addProfileFields from "@/lib/migrations/003-add-profile-fields";
 
 const globalForSequelize = globalThis as unknown as {
   sequelize?: Sequelize;
@@ -29,6 +30,7 @@ export async function connectDatabase() {
     migrations: [
       { name: "001-create-users", ...createUsers },
       { name: "002-add-password-reset-fields", ...addPasswordResetFields },
+      { name: "003-add-profile-fields", ...addProfileFields },
     ],
     context: sequelize.getQueryInterface(),
     storage: new SequelizeStorage({ sequelize }),

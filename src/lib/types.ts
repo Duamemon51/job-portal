@@ -5,6 +5,16 @@ export interface AppUser {
   name: string;
   email: string;
   role: Role;
+  title?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  jobTypes?: string[] | null;
+  jobAreas?: string[] | null;
+  preferredLocations?: string[] | null;
+  emailProvider?: string | null;
+  autoApply?: boolean;
+  notifyNewJobs?: boolean;
+  weeklyReport?: boolean;
 }
 
 export type EmployerStatus = "active" | "inactive" | "pending";

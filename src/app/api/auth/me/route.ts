@@ -19,7 +19,24 @@ export async function GET() {
       return NextResponse.json({ message: "Inte inloggad." }, { status: 401 });
     }
 
-    return NextResponse.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    return NextResponse.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        title: user.title,
+        phone: user.phone,
+        city: user.city,
+        jobTypes: user.jobTypes,
+        jobAreas: user.jobAreas,
+        preferredLocations: user.preferredLocations,
+        emailProvider: user.emailProvider,
+        autoApply: user.autoApply,
+        notifyNewJobs: user.notifyNewJobs,
+        weeklyReport: user.weeklyReport,
+      },
+    });
   } catch (error) {
     console.error("Session lookup error:", error);
     return NextResponse.json({ message: "Ett serverfel uppstod." }, { status: 500 });

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -197,6 +197,7 @@ type FormData = {
   jobTypes: string[];
   areas: string[];
   locations: string[];
+  profileImageName: string | null;
   cvFileName: string | null;
   letterFileName: string | null;
   emailProvider: "gmail" | "outlook" | "imap" | null;
@@ -204,6 +205,29 @@ type FormData = {
   notifyNewJobs: boolean;
   weeklyReport: boolean;
 };
+
+const SWEDISH_CITIES = [
+  "Stockholm",
+  "Göteborg",
+  "Malmö",
+  "Uppsala",
+  "Linköping",
+  "Norrköping",
+  "Örebro",
+  "Västerås",
+  "Jönköping",
+  "Helsingborg",
+  "Sundsvall",
+  "Solna",
+  "Remote",
+  "Lund",
+  "Borlänge",
+  "Eskilstuna",
+  "Gävle",
+  "Södertälje",
+  "Karlstad",
+  "Umeå",
+] as const;
 
 const INITIAL_DATA: FormData = {
   name: "",
@@ -215,6 +239,7 @@ const INITIAL_DATA: FormData = {
   jobTypes: ["Heltid"],
   areas: ["Systemutveckling", "Frontend"],
   locations: ["Stockholm", "Sundsvall", "Solna", "Remote"],
+  profileImageName: null,
   cvFileName: null,
   letterFileName: null,
   emailProvider: null,
@@ -235,6 +260,8 @@ export function RegisterFlow() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [locationInput, setLocationInput] = useState("");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const profileImageInputRef = useRef<HTMLInputElement | null>(null);
 
   function update<K extends keyof FormData>(key: K, value: FormData[K]) {
     setData((prev) => ({ ...prev, [key]: value }));
@@ -248,8 +275,20 @@ export function RegisterFlow() {
     });
   }
 
-  function addLocation() {
-    const trimmed = locationInput.trim();
+  const locationSuggestions = useMemo(() => {
+    const query = locationInput.trim().toLowerCase();
+
+    if (!query) {
+      return [];
+    }
+
+    return SWEDISH_CITIES.filter(
+      (city) => city.toLowerCase().includes(query) && !data.locations.includes(city),
+    ).slice(0, 8);
+  }, [data.locations, locationInput]);
+
+  function addLocation(nextLocation?: string) {
+    const trimmed = (nextLocation ?? locationInput).trim();
     if (!trimmed) return;
 
     setData((prev) => {
@@ -274,11 +313,90 @@ export function RegisterFlow() {
   async function handleAccountSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setStep(2);
+
+    try {
+      const response = await fetch("/api/auth/check-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message ?? "E-postadressen är redan registrerad.");
+      }
+
+      setStep(2);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "E-postadressen är redan registrerad.");
+    }
+  }
+
+  function handleProfileImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    update("profileImageName", file.name);
+
+    const nextUrl = URL.createObjectURL(file);
+    setProfileImage((previous) => {
+      if (previous?.startsWith("blob:")) {
+        URL.revokeObjectURL(previous);
+      }
+      return nextUrl;
+    });
+  }
+
+  function persistRegistrationDocuments() {
+    if (typeof window === "undefined") return;
+
+    const payload = {
+      cvFileName: data.cvFileName,
+      letterFileName: data.letterFileName,
+      profileImageName: data.profileImageName,
+      uploadedAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem("jobportal.registration.documents", JSON.stringify(payload));
   }
 
   async function finishRegistration() {
-    setStep(6);
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          title: data.title,
+          phone: data.phone,
+          city: data.city,
+          jobTypes: data.jobTypes,
+          jobAreas: data.areas,
+          preferredLocations: data.locations,
+          emailProvider: data.emailProvider,
+          autoApply: data.autoApply,
+          notifyNewJobs: data.notifyNewJobs,
+          weeklyReport: data.weeklyReport,
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message ?? "Det gick inte att skapa kontot.");
+      }
+
+      persistRegistrationDocuments();
+      setStep(6);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Det gick inte att skapa kontot.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -388,17 +506,39 @@ export function RegisterFlow() {
             </p>
 
             <div className="mt-6 flex items-center gap-4">
-              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
-                <Upload className="h-5 w-5" />
-              </div>
+              <button
+                type="button"
+                onClick={() => profileImageInputRef.current?.click()}
+                className="group relative grid h-14 w-14 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full bg-muted text-muted-foreground transition hover:ring-2 hover:ring-indigo-200"
+              >
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Profilbild förhandsvisning"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Upload className="h-5 w-5" />
+                )}
+                <input
+                  ref={profileImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleProfileImageChange}
+                />
+              </button>
               <div>
                 <button
                   type="button"
+                  onClick={() => profileImageInputRef.current?.click()}
                   className="text-sm font-semibold text-primary hover:underline"
                 >
-                  Ladda upp profilbild
+                  {profileImage ? "Byt profilbild" : "Ladda upp profilbild"}
                 </button>
-                <p className="text-xs text-muted-foreground">JPG, PNG (max 5 MB)</p>
+                <p className="text-xs text-muted-foreground">
+                  {data.profileImageName ? `Vald fil: ${data.profileImageName}` : "JPG, PNG (max 5 MB)"}
+                </p>
               </div>
             </div>
 
@@ -515,13 +655,32 @@ export function RegisterFlow() {
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
                       event.preventDefault();
-                      addLocation();
+                      addLocation(locationSuggestions[0] ?? locationInput.trim());
                     }
                   }}
                   placeholder="Sök orter..."
                   className="h-11 rounded-xl pl-9"
                 />
               </div>
+
+              {locationSuggestions.length > 0 && (
+                <div className="mt-2 space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-1.5">
+                  {locationSuggestions.map((city) => (
+                    <button
+                      key={city}
+                      type="button"
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        addLocation(city);
+                      }}
+                      className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-sm text-slate-700 transition hover:bg-white hover:text-indigo-700"
+                    >
+                      <span>{city}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <div className="mt-2 flex flex-wrap gap-2">
                 {data.locations.map((loc) => (
                   <span

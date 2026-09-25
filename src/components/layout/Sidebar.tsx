@@ -123,18 +123,31 @@ export default function Sidebar({
   mobileOpen,
   onMobileClose,
   notificationCount = 0,
+  collapsed: controlledCollapsed,
+  onCollapsedChange,
 }: {
   mobileOpen: boolean;
   onMobileClose: () => void;
   /** Unread notifications, shown as the red badge on "Notiser". */
   notificationCount?: number;
+  collapsed?: boolean;
+  onCollapsedChange?: (nextCollapsed: boolean) => void;
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const iconSize = "h-[18px] w-[18px]";
+  const collapsed = controlledCollapsed ?? internalCollapsed;
+
+  const setCollapsed = (next: boolean) => {
+    if (onCollapsedChange) {
+      onCollapsedChange(next);
+      return;
+    }
+    setInternalCollapsed(next);
+  };
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
@@ -154,7 +167,7 @@ export default function Sidebar({
   const sidebarContent = (
     <aside
       className={cn(
-        "flex h-full shrink-0 flex-col border-r !border-slate-600 bg-[#192436] transition-all duration-300",
+        "flex h-screen shrink-0 flex-col border-r !border-slate-600 bg-[#192436] transition-all duration-300 lg:fixed lg:left-0 lg:top-0 lg:z-30",
         collapsed ? "w-[68px]" : "w-[250px]"
       )}
     >
@@ -219,7 +232,7 @@ export default function Sidebar({
 
   return (
     <>
-      <div className="sticky top-0 hidden h-screen shrink-0 lg:block">{sidebarContent}</div>
+      <div className="hidden lg:block">{sidebarContent}</div>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={onMobileClose} aria-hidden="true" />

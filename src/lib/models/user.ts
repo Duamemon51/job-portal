@@ -9,6 +9,16 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare email: string;
   declare passwordHash: string;
   declare role: UserRole;
+  declare title: CreationOptional<string | null>;
+  declare phone: CreationOptional<string | null>;
+  declare city: CreationOptional<string | null>;
+  declare jobTypes: CreationOptional<string[] | null>;
+  declare jobAreas: CreationOptional<string[] | null>;
+  declare preferredLocations: CreationOptional<string[] | null>;
+  declare emailProvider: CreationOptional<string | null>;
+  declare autoApply: CreationOptional<boolean>;
+  declare notifyNewJobs: CreationOptional<boolean>;
+  declare weeklyReport: CreationOptional<boolean>;
   declare resetTokenHash: CreationOptional<string | null>;
   declare resetTokenExpiresAt: CreationOptional<Date | null>;
 }
@@ -39,6 +49,56 @@ User.init(
       type: DataTypes.ENUM("user", "admin", "superadmin"),
       allowNull: false,
       defaultValue: "user",
+    },
+    title: {
+      type: DataTypes.STRING(120),
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING(40),
+      allowNull: true,
+    },
+    city: {
+      type: DataTypes.STRING(120),
+      allowNull: true,
+    },
+    jobTypes: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      field: "job_types",
+    },
+    jobAreas: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      field: "job_areas",
+    },
+    preferredLocations: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      field: "preferred_locations",
+    },
+    emailProvider: {
+      type: DataTypes.STRING(32),
+      allowNull: true,
+      field: "email_provider",
+    },
+    autoApply: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: "auto_apply",
+    },
+    notifyNewJobs: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: "notify_new_jobs",
+    },
+    weeklyReport: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: "weekly_report",
     },
     resetTokenHash: {
       type: DataTypes.STRING(64),

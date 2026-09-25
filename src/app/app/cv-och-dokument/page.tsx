@@ -102,6 +102,8 @@ function uid() {
   return Math.random().toString(36).slice(2, 10);
 }
 
+const REGISTRATION_DOCS_KEY = "jobportal.registration.documents";
+
 function GithubGlyph({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -143,31 +145,73 @@ export default function CvDokumentPage() {
   const otherDocInputRef = useRef<HTMLInputElement>(null);
   const tipsRef = useRef<HTMLDivElement>(null);
 
-  const [mainCv, setMainCv] = useState<StoredFile | null>({
-    id: "main",
-    name: "Mitt_CV.pdf",
-    size: "1.2 MB",
-    uploadedAt: "2026-09-23",
-    url: "",
-  });
+  const [mainCv, setMainCv] = useState<StoredFile | null>(null);
 
-  const [versions, setVersions] = useState<CvVersion[]>([
-    { id: uid(), name: "Mitt_CV.pdf", sublabel: "Standard · Används automatiskt", status: "active", size: "1.2 MB", uploadedAt: "2026-09-23", url: "" },
-    { id: uid(), name: "CV_Frontend.pdf", sublabel: "Anpassad för frontend-utveckling", status: "used", size: "980 KB", uploadedAt: "2026-09-18", url: "" },
-    { id: uid(), name: "CV_Data.pdf", sublabel: "Anpassad för data och AI", status: "used", size: "1.0 MB", uploadedAt: "2026-09-12", url: "" },
-  ]);
+  const [versions, setVersions] = useState<CvVersion[]>([]);
 
-  const [otherDocs, setOtherDocs] = useState<OtherDoc[]>([
-    { id: uid(), name: "Personbevis.pdf", size: "320 KB", uploadedAt: "2026-09-20", category: "personbevis", url: "" },
-    { id: uid(), name: "Betyg.pdf", size: "1.1 MB", uploadedAt: "2026-09-18", category: "betyg", url: "" },
-    { id: uid(), name: "Certifikat_AWS.pdf", size: "450 KB", uploadedAt: "2026-09-15", category: "certifikat", url: "" },
-  ]);
+  const [otherDocs, setOtherDocs] = useState<OtherDoc[]>([]);
 
-  const [links, setLinks] = useState<PortfolioLink[]>([
-    { id: uid(), type: "github", url: "https://github.com/dittanvandarnamn" },
-    { id: uid(), type: "linkedin", url: "https://www.linkedin.com/in/dittanvandarnamn" },
-    { id: uid(), type: "portfolio", url: "https://dinsida.se" },
-  ]);
+  const [links, setLinks] = useState<PortfolioLink[]>([]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const stored = window.localStorage.getItem(REGISTRATION_DOCS_KEY);
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored) as {
+        cvFileName?: string | null;
+        letterFileName?: string | null;
+        uploadedAt?: string | null;
+      };
+
+      if (parsed.cvFileName) {
+        setMainCv({
+          id: "registered-main",
+          name: parsed.cvFileName,
+          size: "Uppladdad under registrering",
+          uploadedAt: parsed.uploadedAt ? new Date(parsed.uploadedAt).toISOString().slice(0, 10) : today(),
+          url: "",
+        });
+
+        setVersions((current) => {
+          if (current.some((version) => version.name === parsed.cvFileName)) return current;
+          return [
+            {
+              id: "registered-main-version",
+              name: parsed.cvFileName,
+              sublabel: "Uppladdad under registrering",
+              status: "active",
+              size: "Uppladdad under registrering",
+              uploadedAt: parsed.uploadedAt ? new Date(parsed.uploadedAt).toISOString().slice(0, 10) : today(),
+              url: "",
+            },
+            ...current,
+          ];
+        });
+      }
+
+      if (parsed.letterFileName) {
+        setOtherDocs((current) => {
+          if (current.some((doc) => doc.name === parsed.letterFileName)) return current;
+          return [
+            {
+              id: "registered-letter",
+              name: parsed.letterFileName,
+              size: "Uppladdad under registrering",
+              uploadedAt: parsed.uploadedAt ? new Date(parsed.uploadedAt).toISOString().slice(0, 10) : today(),
+              category: "annat",
+              url: "",
+            },
+            ...current,
+          ];
+        });
+      }
+    } catch {
+      // ignore malformed local storage data
+    }
+  }, []);
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -639,7 +683,7 @@ export default function CvDokumentPage() {
                 Öppna i helskärm
               </button>
             </div>
-            <CvPreview name={user.name} email={user.email} />
+            <CvPreview name={user.name} email={user.email} title={user.title} city={user.city} />
           </div>
 
           <div ref={tipsRef} className="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
@@ -693,21 +737,23 @@ function SkeletonBar({ width }: { width: string }) {
   return <div className={cn("h-2 rounded-full bg-muted", width)} />;
 }
 
-function CvPreview({ name, email }: { name: string; email: string }) {
+function CvPreview({ name, email, title, city }: { name: string; email: string; title?: string | null; city?: string | null }) {
   return (
     <div className="rounded-xl border border-border p-4">
       <div className="text-lg font-bold text-foreground">{name}</div>
-      <div className="text-sm text-muted-foreground italic">Ingen titel angiven</div>
+      <div className="text-sm text-muted-foreground italic">{title ?? "Ingen titel angiven"}</div>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
           <Mail className="h-3 w-3" />
           {email}
         </span>
         <span className="flex items-center gap-1">
-          <Phone className="h-3 w-3" />—
+          <Phone className="h-3 w-3" />
+          {city ?? "—"}
         </span>
         <span className="flex items-center gap-1">
-          <MapPin className="h-3 w-3" />—
+          <MapPin className="h-3 w-3" />
+          {city ?? "—"}
         </span>
       </div>
 

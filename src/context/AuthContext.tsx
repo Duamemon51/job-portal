@@ -41,6 +41,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: data.user.name,
         email: data.user.email,
         role: ROLE_FROM_SESSION[data.user.role as SessionRole] ?? "user",
+        title: data.user.title ?? null,
+        phone: data.user.phone ?? null,
+        city: data.user.city ?? null,
+        jobTypes: data.user.jobTypes ?? null,
+        jobAreas: data.user.jobAreas ?? null,
+        preferredLocations: data.user.preferredLocations ?? null,
+        emailProvider: data.user.emailProvider ?? null,
+        autoApply: Boolean(data.user.autoApply),
+        notifyNewJobs: Boolean(data.user.notifyNewJobs),
+        weeklyReport: Boolean(data.user.weeklyReport),
       });
     } catch {
       setUser(null);
@@ -68,6 +78,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: data.user.name,
           email: data.user.email,
           role: ROLE_FROM_SESSION[data.user.role as SessionRole] ?? "user",
+          title: data.user.title ?? null,
+          phone: data.user.phone ?? null,
+          city: data.user.city ?? null,
+          jobTypes: data.user.jobTypes ?? null,
+          jobAreas: data.user.jobAreas ?? null,
+          preferredLocations: data.user.preferredLocations ?? null,
+          emailProvider: data.user.emailProvider ?? null,
+          autoApply: Boolean(data.user.autoApply),
+          notifyNewJobs: Boolean(data.user.notifyNewJobs),
+          weeklyReport: Boolean(data.user.weeklyReport),
         });
       } finally {
         setLoading(false);

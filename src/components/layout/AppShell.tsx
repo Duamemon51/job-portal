@@ -94,6 +94,7 @@ function AppFooter() {
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -126,12 +127,17 @@ export default function AppShell({ children }: { children: ReactNode }) {
         {/* Sidebar reads the ?category= query param (to highlight the active document
             category), which Next.js requires a Suspense boundary around for static builds. */}
         <Suspense fallback={<div className="hidden lg:block w-[260px] shrink-0" style={{ background: "var(--sidebar-gradient)" }} />}>
-          <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+          <Sidebar
+            mobileOpen={mobileOpen}
+            onMobileClose={() => setMobileOpen(false)}
+            collapsed={sidebarCollapsed}
+            onCollapsedChange={setSidebarCollapsed}
+          />
         </Suspense>
 
         {/* min-w-0 lets this column shrink below its widest descendant, so a wide table
             scrolls internally instead of dragging the whole page sideways. */}
-        <div className="min-w-0 flex-1">
+        <div className={`min-w-0 flex-1 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-[68px]" : "lg:pl-[250px]"}`}>
           <header className="sticky top-0 z-40 flex h-[78px] items-center justify-between gap-4 border-b border-border bg-card px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 flex-1 items-center gap-3">
               <button

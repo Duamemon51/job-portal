@@ -21,16 +21,16 @@ export default function ProfilPage() {
 
   const [summaryEditing, setSummaryEditing] = useState(false);
   const [name, setName] = useState(user.name);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(user.title ?? "");
 
   const [form, setForm] = useState({
     firstName: user.name.split(" ")[0] ?? "",
     lastName: user.name.split(" ").slice(1).join(" "),
     email: user.email,
-    phone: "",
+    phone: user.phone ?? "",
     address: "",
     postalCode: "",
-    city: "",
+    city: user.city ?? "",
     linkedin: "",
     portfolio: "",
   });
