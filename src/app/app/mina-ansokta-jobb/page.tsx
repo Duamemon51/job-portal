@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -14,7 +14,7 @@ import {
   MapPin,
   ArrowUpDown,
   BarChart3,
-  TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,33 +23,18 @@ import { cn } from "@/lib/utils";
 
 type ApplicationStatus = "sent" | "response" | "interview" | "rejected";
 
-interface CompanyBadge {
-  name: string;
-  short: string;
-  className: string;
-}
-
 interface JobApplication {
   id: string;
+  jobId: string;
   title: string;
-  category: string;
-  company: CompanyBadge;
-  city: string;
-  appliedAt: string;
+  company: string;
+  city: string | null;
+  category: string | null;
+  webpageUrl: string | null;
+  logoUrl: string | null;
   status: ApplicationStatus;
+  appliedAt: string; // ISO
 }
-
-const COMPANIES: CompanyBadge[] = [
-  { name: "Spotify", short: "S", className: "bg-emerald-500 text-white" },
-  { name: "Klarna", short: "K", className: "bg-pink-200 text-pink-700" },
-  { name: "Northvolt", short: "N", className: "bg-neutral-900 text-white" },
-  { name: "Tele2", short: "T2", className: "bg-red-600 text-white" },
-  { name: "ICA", short: "ICA", className: "bg-red-600 text-white" },
-  { name: "SEB", short: "SEB", className: "bg-emerald-600 text-white" },
-  { name: "Scania", short: "SC", className: "bg-blue-700 text-white" },
-  { name: "Ericsson", short: "E", className: "bg-blue-900 text-white" },
-  { name: "H&M", short: "H&M", className: "bg-red-600 text-white" },
-];
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   sent: "Skickad",
@@ -65,87 +50,54 @@ const STATUS_STYLES: Record<ApplicationStatus, string> = {
   rejected: "bg-red-100 text-red-600",
 };
 
-const EXTRA_TITLES = [
-  "Data Scientist",
-  "QA Engineer",
-  "Produktägare",
-  "UX Designer",
-  "Cloud Engineer",
-  "Mobile Developer",
-  "Säkerhetsanalytiker",
-  "Nätverkstekniker",
-  "Testautomatiserare",
-  "IT-projektledare",
-];
-
-const CITIES = ["Stockholm", "Västerås", "Solna", "Södertälje", "Göteborg", "Malmö", "Uppsala", "Linköping"];
-
-function buildApplications(): JobApplication[] {
-  const seedRows: Array<[string, number, string, string, ApplicationStatus]> = [
-    ["Systemutvecklare", 0, "Stockholm", "2025-09-21", "sent"],
-    ["Frontend-utvecklare", 1, "Stockholm", "2025-09-20", "response"],
-    ["Fullstack Developer", 2, "Västerås", "2025-09-20", "sent"],
-    ["React-utvecklare", 3, "Stockholm", "2025-09-19", "interview"],
-    ["Backend-utvecklare", 4, "Solna", "2025-09-19", "sent"],
-    ["IT-supporttekniker", 5, "Stockholm", "2025-09-18", "rejected"],
-    ["Systemadministratör", 6, "Södertälje", "2025-09-18", "sent"],
-    ["DevOps Engineer", 7, "Stockholm", "2025-09-17", "sent"],
-    ["Frontend Developer", 8, "Stockholm", "2025-09-17", "response"],
-    ["Dataingenjör", 0, "Stockholm", "2025-09-16", "sent"],
-  ];
-
-  const rows: JobApplication[] = seedRows.map(([title, companyIdx, city, date, status], i) => ({
-    id: `app-${i + 1}`,
-    title,
-    category: "IT & Tech",
-    company: COMPANIES[companyIdx],
-    city,
-    appliedAt: date,
-    status,
-  }));
-
-  const statusCycle: ApplicationStatus[] = ["sent", "sent", "sent", "response", "sent", "interview", "sent", "rejected", "sent", "response"];
-  const seededCount = rows.length;
-
-  for (let i = seededCount; i < 48; i++) {
-    const title = EXTRA_TITLES[i % EXTRA_TITLES.length];
-    const company = COMPANIES[i % COMPANIES.length];
-    const city = CITIES[i % CITIES.length];
-    const status = statusCycle[i % statusCycle.length];
-    const dayOffset = i - seededCount;
-    const date = new Date(2025, 8, 15);
-    date.setDate(date.getDate() - dayOffset);
-    rows.push({
-      id: `app-${i + 1}`,
-      title,
-      category: "IT & Tech",
-      company,
-      city,
-      appliedAt: date.toISOString().slice(0, 10),
-      status,
-    });
-  }
-
-  return rows;
-}
-
-const APPLICATIONS = buildApplications();
-
-const STATS = [
-  { label: "Totalt ansökta jobb", value: APPLICATIONS.length, trend: "+12%", hint: "senaste 30 dagarna", icon: FileText },
-  { label: "Denna vecka", value: 12, trend: "+33%", hint: "jämfört med förra veckan", icon: Send },
-  { label: "Svar mottagna", value: 8, trend: "17%", hint: "av alla ansökningar", icon: Eye },
-  { label: "Intervjuer", value: 3, trend: "+6%", hint: "av alla ansökningar", icon: CalendarDays },
-];
-
 const ROWS_PER_PAGE_OPTIONS = [10, 25, 50];
 
 function formatDate(iso: string) {
-  const [y, m, d] = iso.split("-");
-  return `${y}-${m}-${d}`;
+  return iso.slice(0, 10);
+}
+
+function hashColor(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  return `hsl(${Math.abs(hash) % 360}, 55%, 42%)`;
+}
+
+function initialsFor(name: string): string {
+  const parts = name.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function CompanyBadge({ name, logoUrl }: { name: string; logoUrl: string | null }) {
+  if (logoUrl) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={logoUrl} alt="" aria-hidden="true" className="h-7 w-7 shrink-0 rounded-lg object-contain" />;
+  }
+  return (
+    <span
+      className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-[10px] font-bold text-white"
+      style={{ background: hashColor(name) }}
+    >
+      {initialsFor(name)}
+    </span>
+  );
+}
+
+function isThisWeek(iso: string) {
+  const date = new Date(iso);
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - now.getDay());
+  start.setHours(0, 0, 0, 0);
+  return date >= start;
 }
 
 export default function MinaAnsoktaJobbPage() {
+  const [applications, setApplications] = useState<JobApplication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ApplicationStatus>("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -156,22 +108,63 @@ export default function MinaAnsoktaJobbPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const categories = useMemo(() => Array.from(new Set(APPLICATIONS.map((a) => a.category))), []);
-  const cities = useMemo(() => Array.from(new Set(APPLICATIONS.map((a) => a.city))).sort(), []);
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/applications")
+      .then((res) => {
+        if (!res.ok) throw new Error("request-failed");
+        return res.json();
+      })
+      .then((data) => {
+        if (!cancelled) setApplications(data.applications ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Kunde inte hämta dina ansökningar just nu.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const categories = useMemo(
+    () => Array.from(new Set(applications.map((a) => a.category).filter((c): c is string => Boolean(c)))),
+    [applications]
+  );
+  const cities = useMemo(
+    () => Array.from(new Set(applications.map((a) => a.city).filter((c): c is string => Boolean(c)))).sort(),
+    [applications]
+  );
+
+  const stats = useMemo(() => {
+    const thisWeek = applications.filter((a) => isThisWeek(a.appliedAt)).length;
+    const responses = applications.filter((a) => a.status === "response" || a.status === "interview").length;
+    const interviews = applications.filter((a) => a.status === "interview").length;
+    return [
+      { label: "Totalt ansökta jobb", value: applications.length, hint: "sedan du började använda JobbAuto", icon: FileText },
+      { label: "Denna vecka", value: thisWeek, hint: "ansökningar sedan i söndags", icon: Send },
+      { label: "Svar mottagna", value: responses, hint: "av alla ansökningar", icon: Eye },
+      { label: "Intervjuer", value: interviews, hint: "av alla ansökningar", icon: CalendarDays },
+    ];
+  }, [applications]);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
-    const rows = APPLICATIONS.filter((a) => {
-      if (term && !a.title.toLowerCase().includes(term) && !a.company.name.toLowerCase().includes(term)) return false;
+    const rows = applications.filter((a) => {
+      if (term && !a.title.toLowerCase().includes(term) && !a.company.toLowerCase().includes(term)) return false;
       if (statusFilter !== "all" && a.status !== statusFilter) return false;
       if (categoryFilter !== "all" && a.category !== categoryFilter) return false;
       if (cityFilter !== "all" && a.city !== cityFilter) return false;
-      if (dateFilter && a.appliedAt !== dateFilter) return false;
+      if (dateFilter && formatDate(a.appliedAt) !== dateFilter) return false;
       return true;
     });
     rows.sort((a, b) => (sortDir === "desc" ? b.appliedAt.localeCompare(a.appliedAt) : a.appliedAt.localeCompare(b.appliedAt)));
     return rows;
-  }, [search, statusFilter, categoryFilter, cityFilter, dateFilter, sortDir]);
+  }, [applications, search, statusFilter, categoryFilter, cityFilter, dateFilter, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const currentPage = Math.min(page, totalPages);
@@ -226,31 +219,34 @@ export default function MinaAnsoktaJobbPage() {
             Här ser du alla jobb som du har ansökt till via JobbAuto, med status och detaljer.
           </p>
         </div>
-        <Button className="h-10 gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white hover:bg-indigo-600">
-          <Download className="h-4 w-4" />
-          Ladda ner som PDF
-        </Button>
+        <Link href="/app/lediga-tjanster">
+          <Button className="h-10 gap-2 rounded-xl bg-indigo-500 px-4 text-sm font-semibold text-white hover:bg-indigo-600">
+            <Search className="h-4 w-4" />
+            Sök fler tjänster
+          </Button>
+        </Link>
       </div>
 
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {STATS.map((stat) => (
+        {stats.map((stat) => (
           <div key={stat.label} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
             <div className="grid h-9 w-9 place-items-center rounded-xl bg-indigo-50 text-indigo-500">
               <stat.icon className="h-4.5 w-4.5" />
             </div>
             <div className="mt-3 text-sm text-muted-foreground">{stat.label}</div>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-foreground">{stat.value}</span>
-              <span className="flex items-center gap-0.5 text-xs font-semibold text-emerald-600">
-                <TrendingUp className="h-3 w-3" />
-                {stat.trend}
-              </span>
-            </div>
+            <div className="mt-1 text-2xl font-bold text-foreground">{stat.value}</div>
             <div className="mt-1 text-xs text-muted-foreground">{stat.hint}</div>
           </div>
         ))}
       </div>
+
+      {error && (
+        <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          {error}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2.5">
@@ -362,63 +358,80 @@ export default function MinaAnsoktaJobbPage() {
               </tr>
             </thead>
             <tbody>
-              {pageRows.map((row) => (
-                <tr key={row.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
-                  <td className="px-4 py-3.5">
-                    <input
-                      type="checkbox"
-                      checked={selected.has(row.id)}
-                      onChange={() => toggleRow(row.id)}
-                      className="h-4 w-4 rounded border-input accent-indigo-500"
-                      aria-label={`Markera ${row.title}`}
-                    />
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <div className="font-semibold text-indigo-500">{row.title}</div>
-                    <div className="text-xs text-muted-foreground">{row.category}</div>
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className={cn(
-                          "grid h-7 w-7 shrink-0 place-items-center rounded-lg text-[10px] font-bold",
-                          row.company.className
-                        )}
-                      >
-                        {row.company.short}
-                      </span>
-                      <span className="text-foreground">{row.company.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <span className="flex items-center gap-1.5 text-muted-foreground">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {row.city}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 text-foreground">{formatDate(row.appliedAt)}</td>
-                  <td className="px-4 py-3.5">
-                    <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-semibold", STATUS_STYLES[row.status])}>
-                      {STATUS_LABELS[row.status]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 text-right">
-                    <DropdownMenu
-                      items={[
-                        { label: "Visa annons", icon: Eye, onClick: () => {} },
-                        { label: "Ladda ner ansökan", icon: Download, onClick: () => {} },
-                      ]}
-                    />
-                  </td>
-                </tr>
-              ))}
-
-              {pageRows.length === 0 && (
+              {loading ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-10 text-center text-sm text-muted-foreground">
-                    Inga ansökningar matchar din sökning.
+                    Hämtar dina ansökningar…
                   </td>
                 </tr>
+              ) : (
+                <>
+                  {pageRows.map((row) => (
+                    <tr key={row.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
+                      <td className="px-4 py-3.5">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(row.id)}
+                          onChange={() => toggleRow(row.id)}
+                          className="h-4 w-4 rounded border-input accent-indigo-500"
+                          aria-label={`Markera ${row.title}`}
+                        />
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <div className="font-semibold text-indigo-500">{row.title}</div>
+                        <div className="text-xs text-muted-foreground">{row.category ?? "—"}</div>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <CompanyBadge name={row.company} logoUrl={row.logoUrl} />
+                          <span className="text-foreground">{row.company}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span className="flex items-center gap-1.5 text-muted-foreground">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {row.city ?? "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-foreground">{formatDate(row.appliedAt)}</td>
+                      <td className="px-4 py-3.5">
+                        <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-semibold", STATUS_STYLES[row.status])}>
+                          {STATUS_LABELS[row.status]}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-right">
+                        <DropdownMenu
+                          items={[
+                            {
+                              label: "Visa annons",
+                              icon: Eye,
+                              onClick: () => row.webpageUrl && window.open(row.webpageUrl, "_blank", "noopener,noreferrer"),
+                            },
+                            { label: "Ladda ner ansökan", icon: Download, onClick: () => {} },
+                          ]}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+
+                  {pageRows.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                        {applications.length === 0 ? (
+                          <>
+                            Du har inte ansökt till några jobb än.{" "}
+                            <Link href="/app/lediga-tjanster" className="font-medium text-indigo-500 hover:underline">
+                              Hitta lediga tjänster
+                            </Link>
+                            .
+                          </>
+                        ) : (
+                          "Inga ansökningar matchar din sökning."
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </>
               )}
             </tbody>
           </table>

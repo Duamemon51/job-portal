@@ -19,6 +19,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare autoApply: CreationOptional<boolean>;
   declare notifyNewJobs: CreationOptional<boolean>;
   declare weeklyReport: CreationOptional<boolean>;
+  declare experienceLevels: CreationOptional<string[] | null>;
+  declare locationMode: CreationOptional<string>;
+  declare radiusMil: CreationOptional<number | null>;
+  declare nationwide: CreationOptional<boolean>;
   declare resetTokenHash: CreationOptional<string | null>;
   declare resetTokenExpiresAt: CreationOptional<Date | null>;
 }
@@ -99,6 +103,27 @@ User.init(
       allowNull: false,
       defaultValue: false,
       field: "weekly_report",
+    },
+    experienceLevels: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      field: "experience_levels",
+    },
+    locationMode: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      defaultValue: "ort",
+      field: "location_mode",
+    },
+    radiusMil: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "radius_mil",
+    },
+    nationwide: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     resetTokenHash: {
       type: DataTypes.STRING(64),

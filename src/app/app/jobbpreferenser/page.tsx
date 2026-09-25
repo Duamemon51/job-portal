@@ -9,8 +9,9 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import {
+  AlertTriangle,
   Check,
   ChevronDown,
   ChevronRight,
@@ -242,21 +243,55 @@ function OptionCard({
 
 export default function JobbpreferenserPage() {
   // 1. Categories (kept in selection order, like the "Valda kategorier" panel)
-  const [categories, setCategories] = useState<string[]>(["it", "marknad", "kundservice", "ingenjor"]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [categoryQuery, setCategoryQuery] = useState("");
 
   // 2. Location
   const [mode, setMode] = useState<LocationMode>("ort");
-  const [cities, setCities] = useState<string[]>(["Stockholm", "Solna", "Sundbyberg"]);
+  const [cities, setCities] = useState<string[]>([]);
   const [cityQuery, setCityQuery] = useState("");
   const [radius, setRadius] = useState(5);
   const [nationwide, setNationwide] = useState(false);
 
   // 3 + 4
-  const [employment, setEmployment] = useState<string[]>(["heltid"]);
-  const [experience, setExperience] = useState<string[]>(["medior"]);
+  const [employment, setEmployment] = useState<string[]>([]);
+  const [experience, setExperience] = useState<string[]>([]);
 
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/preferences")
+      .then((res) => {
+        if (!res.ok) throw new Error("request-failed");
+        return res.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setCategories(data.categories ?? []);
+        setCities(data.cities ?? []);
+        setEmployment(data.employment ?? []);
+        setExperience(data.experience ?? []);
+        setMode((data.mode as LocationMode) ?? "ort");
+        setRadius(data.radius ?? 5);
+        setNationwide(Boolean(data.nationwide));
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredCategories = useMemo(() => {
     const q = categoryQuery.trim().toLowerCase();
@@ -276,12 +311,24 @@ export default function JobbpreferenserPage() {
     setCityQuery("");
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const payload = { categories, mode, cities, radius, nationwide, employment, experience };
-    // TODO: send `payload` to your API
-    console.log("Jobbpreferenser", payload);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setSaving(true);
+    setSaveError(false);
+    try {
+      const res = await fetch("/api/preferences", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("request-failed");
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch {
+      setSaveError(true);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -301,6 +348,21 @@ export default function JobbpreferenserPage() {
           </p>
         </header>
 
+        {loadError && (
+          <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            Kunde inte hämta dina sparade preferenser. Ändringar du gör nu går fortfarande att spara.
+          </div>
+        )}
+
+        {loading ? (
+          <div className="space-y-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-48 animate-pulse rounded-2xl border border-slate-200 bg-slate-100" />
+            ))}
+          </div>
+        ) : (
+          <>
         {/* 1. Jobbkategori */}
         <Section
           title="1. Jobbkategori"
@@ -559,6 +621,11 @@ export default function JobbpreferenserPage() {
 
         {/* Save */}
         <div className="flex items-center justify-end gap-3 pb-4">
+          {saveError && (
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-600" role="status">
+              <AlertTriangle className="h-4 w-4" /> Kunde inte spara. Försök igen.
+            </span>
+          )}
           {saved && (
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600" role="status">
               <Check className="h-4 w-4" /> Preferenser sparade
@@ -567,11 +634,14 @@ export default function JobbpreferenserPage() {
           <button
             type="button"
             onClick={handleSave}
-            className="rounded-lg bg-[#6366f1] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#5558e6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]/50 focus-visible:ring-offset-2"
+            disabled={saving}
+            className="rounded-lg bg-[#6366f1] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#5558e6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Spara preferenser
+            {saving ? "Sparar…" : "Spara preferenser"}
           </button>
         </div>
+        </>
+        )}
     </div>
   );
 }
